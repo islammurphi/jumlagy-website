@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>ERB PRO</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+font-family:Tajawal;
+margin:0;
+background:#f1f5f9;
+}
+
+/* Sidebar */
+.sidebar{
+width:250px;
+position:fixed;
+right:0;
+top:0;
+bottom:0;
+background:#0f172a;
+color:white;
+padding:20px;
+}
+
+.nav{
+margin-top:20px;
+}
+
+.nav div{
+padding:10px;
+cursor:pointer;
+border-radius:10px;
+}
+
+.nav div:hover{
+background:#1e293b;
+}
+
+/* Main */
+.main{
+margin-right:250px;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:20px;
+margin-bottom:20px;
+}
+
+/* Buttons */
+.btn{
+padding:8px 15px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+}
+
+.primary{background:#2563eb;color:white;}
+.danger{background:#ef4444;color:white;}
+
+/* Dark Mode */
+.dark{
+background:#020617;
+color:white;
+}
+
+.dark .card{
+background:#0f172a;
+}
+
+/* Login Block */
+.block{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+const ADMIN="islammurphi@gmail.com";
+const WHATS="01207696202";
+
+let user=null;
+let data=JSON.parse(localStorage.getItem("data")||"{}");
+let subs=JSON.parse(localStorage.getItem("subs")||"[]");
+
+function login(){
+let email=prompt("ادخل الايميل");
+
+let sub=subs.find(s=>s.email==email);
+
+if(email!=ADMIN && !sub){
+document.body.innerHTML=`
+<div class="block">
+<div class="card">
+<h2>🚫 مفيش اشتراك</h2>
+<p>تواصل مع الادمن</p>
+<a href="https://wa.me/201207696202" class="btn primary">واتساب</a>
+</div>
+</div>`;
+return;
+}
+
+user=email;
+render();
+}
+
+function render(){
+
+document.getElementById("app").innerHTML=`
+
+<div class="sidebar">
+<h2>ERB PRO</h2>
+
+<div class="nav">
+<div onclick="page('dashboard')">الرئيسية</div>
+<div onclick="page('repairs')">الصيانة</div>
+<div onclick="page('customers')">العملاء</div>
+${user==ADMIN?'<div onclick="page(\'subs\')">الاشتراكات</div>':''}
+</div>
+
+<button onclick="logout()" class="btn danger">خروج</button>
+</div>
+
+<div class="main" id="main"></div>
+`;
+
+page("dashboard");
+}
+
+function page(p){
+
+let html="";
+
+if(p=="dashboard"){
+html=`
+<div class="card">
+<h2>لوحة التحكم</h2>
+<p>اهلا ${user}</p>
+</div>`;
+}
+
+if(p=="repairs"){
+html=`
+<div class="card">
+<h2>الصيانة</h2>
+<button class="btn primary" onclick="addRepair()">+ اضافة</button>
+<div id="rep"></div>
+</div>`;
+
+renderRepairs();
+}
+
+if(p=="customers"){
+html=`
+<div class="card">
+<h2>العملاء</h2>
+<button class="btn primary" onclick="addCustomer()">+ اضافة</button>
+<div id="cust"></div>
+</div>`;
+
+renderCustomers();
+}
+
+if(p=="subs" && user==ADMIN){
+html=`
+<div class="card">
+<h2>الاشتراكات</h2>
+<button class="btn primary" onclick="addSub()">+ اشتراك</button>
+<div id="subsList"></div>
+</div>`;
+renderSubs();
+}
+
+document.getElementById("main").innerHTML=html;
+}
+
+/* Repairs */
+function addRepair(){
+let name=prompt("اسم العميل");
+let device=prompt("الجهاز");
+let price=prompt("السعر");
+
+let r={id:Date.now(),name,device,price};
+data.rep=data.rep||[];
+data.rep.push(r);
+
+localStorage.setItem("data",JSON.stringify(data));
+renderRepairs();
+}
+
+function renderRepairs(){
+let div=document.getElementById("rep");
+if(!div)return;
+
+div.innerHTML=(data.rep||[]).map(r=>`
+<div class="card">
+${r.name} - ${r.device} - ${r.price}
+<button onclick="wa('${r.name}','${r.device}')">واتساب</button>
+</div>`).join("");
+}
+
+/* Customers */
+function addCustomer(){
+let name=prompt("اسم العميل");
+data.cust=data.cust||[];
+data.cust.push({name});
+
+localStorage.setItem("data",JSON.stringify(data));
+renderCustomers();
+}
+
+function renderCustomers(){
+let div=document.getElementById("cust");
+if(!div)return;
+
+div.innerHTML=(data.cust||[]).map(c=>`
+<div class="card">${c.name}</div>`).join("");
+}
+
+/* Subs */
+function addSub(){
+let email=prompt("email");
+subs.push({email});
+
+localStorage.setItem("subs",JSON.stringify(subs));
+renderSubs();
+}
+
+function renderSubs(){
+let div=document.getElementById("subsList");
+if(!div)return;
+
+div.innerHTML=subs.map(s=>`
+<div class="card">${s.email}</div>`).join("");
+}
+
+/* WhatsApp */
+function wa(name,device){
+window.open(`https://wa.me/?text=${name} جهازك ${device} جاهز`);
+}
+
+/* Logout */
+function logout(){
+location.reload();
+}
+
+/* Start */
+login();
+</script>
+
+</body>
+</html>
