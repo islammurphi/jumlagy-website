@@ -56,9 +56,7 @@
             color: #334155;
             transition: .2s;
         }
-        .nav-item:hover {
-            background: #e2e8f0;
-        }
+        .nav-item:hover { background: #e2e8f0; }
         .nav-item.active {
             background: #2563eb;
             color: white;
@@ -104,9 +102,7 @@
             border: 1px solid #e2e8f0;
             transition: .2s;
         }
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
+        .stat-card:hover { transform: translateY(-5px); }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -123,7 +119,6 @@
             cursor: pointer;
             transition: .2s;
         }
-        .btn-sm:hover { opacity: 0.8; }
         .logout-btn {
             background: #ef4444;
             border: none;
@@ -137,17 +132,10 @@
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 10px;
-            transition: .2s;
             border: 1px solid #e2e8f0;
         }
-        .order-item:hover {
-            background: #f1f5f9;
-        }
         .page { display: none; animation: fadeIn 0.25s ease; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         select, input {
             background: white;
             border: 1px solid #e2e8f0;
@@ -159,6 +147,7 @@
 </head>
 <body>
 
+<!-- شاشة تسجيل الدخول -->
 <div id="loginScreen" class="login-screen">
     <div class="login-card">
         <h2>جملجي ERB</h2>
@@ -169,11 +158,12 @@
     </div>
 </div>
 
+<!-- لوحة التحكم الرئيسية -->
 <div id="dashboard" style="display:none">
     <div class="app">
         <div class="sidebar">
             <h3 style="margin-bottom:20px;">جملجي ERB</h3>
-            <div class="nav-item active" data-page="dashboard">📊 لوحة التحكم</div>
+            <div class="nav-item" data-page="dashboard">📊 لوحة التحكم</div>
             <div class="nav-item" data-page="repair">🔧 أوامر الصيانة</div>
             <div class="nav-item" data-page="inventory">📦 المخزون</div>
             <div class="nav-item" data-page="expenses">💰 المصروفات</div>
@@ -188,26 +178,32 @@
                 <div><span id="userName"></span> <button class="logout-btn" id="logoutBtn">خروج</button></div>
             </div>
 
+            <!-- لوحة التحكم -->
             <div id="dashboardPage" class="page">
                 <div class="stats-grid" id="statsGrid"></div>
-                <div class="card"><h3>آخر أوامر الصيانة</h3><div id="recentOrders"></div></div>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin:0;">آخر أوامر الصيانة</h3>
+                        <button class="btn-sm" onclick="generateDemoData()" style="background: #22c55e;">➕ إضافة بيانات تجريبية</button>
+                    </div>
+                    <div id="recentOrders"></div>
+                </div>
             </div>
 
+            <!-- أوامر الصيانة (شكل جديد) -->
             <div id="repairPage" class="page">
-                <div class="card"><h3>🔧 أوامر الصيانة</h3><button class="btn-sm" onclick="addSampleOrder()">+ إضافة أمر صيانة</button><div id="repairList" style="margin-top:15px;"></div></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                    <h2>🔧 أوامر الصيانة</h2>
+                    <button class="btn-sm" onclick="addSampleOrder()">+ إضافة أمر صيانة</button>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:15px;" id="repairList"></div>
             </div>
 
-            <div id="inventoryPage" class="page">
-                <div class="card"><h3>📦 قطع الغيار</h3><button class="btn-sm" onclick="addSamplePart()">+ إضافة قطعة غيار</button><div id="partsList" style="margin-top:15px;"></div></div>
-            </div>
+            <!-- باقي الصفحات -->
+            <div id="inventoryPage" class="page"><div class="card"><h3>📦 قطع الغيار</h3><button class="btn-sm" onclick="addSamplePart()">+ إضافة</button><div id="partsList" style="margin-top:15px;"></div></div></div>
+            <div id="expensesPage" class="page"><div class="card"><h3>💰 المصروفات</h3><button class="btn-sm" onclick="addSampleExpense()">+ إضافة</button><div id="expensesList" style="margin-top:15px;"></div></div></div>
 
-            <div id="expensesPage" class="page">
-                <div class="card"><h3>💰 المصروفات</h3><button class="btn-sm" onclick="addSampleExpense()">+ إضافة مصروف</button><div id="expensesList" style="margin-top:15px;"></div></div>
-            </div>
-
-            <div id="customersPage" class="page">
-                <div class="card"><h3>👥 العملاء</h3><button class="btn-sm" onclick="addSampleCustomer()">+ إضافة عميل</button><div id="customersList" style="margin-top:15px;"></div></div>
-            </div>
+            <div id="customersPage" class="page"><div class="card"><h3>👥 العملاء</h3><button class="btn-sm" onclick="addSampleCustomer()">+ إضافة</button><div id="customersList" style="margin-top:15px;"></div></div></div>
 
             <div id="posPage" class="page">
                 <div class="card"><h3>🧾 إنشاء فاتورة</h3>
@@ -229,9 +225,7 @@
                 <div class="card"><h3>تفاصيل العمليات</h3><div id="reportsTable"></div></div>
             </div>
 
-            <div id="subscriptionsPage" class="page">
-                <div class="card"><h3>👑 إدارة الاشتراكات</h3><div id="usersList"></div></div>
-            </div>
+            <div id="subscriptionsPage" class="page"><div class="card"><h3>👑 إدارة الاشتراكات</h3><div id="usersList"></div></div></div>
         </div>
     </div>
 </div>
@@ -254,22 +248,18 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     const db = getFirestore(app);
-    
     const ADMIN_EMAIL = "islammurphi@gmail.com";
     
+    // تعريف المتغيرات العامة
     let repairOrders = JSON.parse(localStorage.getItem('repairOrders')) || [];
     let spareParts = JSON.parse(localStorage.getItem('spareParts')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let customers = JSON.parse(localStorage.getItem('customers')) || [];
-    
-    if(repairOrders.length===0) repairOrders.push({ id:1, customer:"أحمد محمد", device:"iPhone 12", price:550, date:"2025-04-20", status:"قيد الصيانة" });
-    if(expenses.length===0) expenses.push({ id:1, title:"إيجار المحل", amount:5000, date:"2025-04-01" });
-    if(spareParts.length===0) spareParts.push({ id:1, name:"شاشة iPhone", sellPrice:450, qty:8 });
-    if(customers.length===0) customers.push({ id:1, name:"أحمد محمد", phone:"01001234567" });
+    let cart = [];
     
     function getStatusColor(status){
-        if(status.includes("فيد")) return "#3b82f6";
         if(status.includes("تم")) return "#22c55e";
+        if(status.includes("فيد")) return "#3b82f6";
         if(status.includes("ملغي")) return "#ef4444";
         return "#facc15";
     }
@@ -282,7 +272,49 @@
         renderAll();
     }
     
+    window.generateDemoData = () => {
+        customers.push({ id: Date.now(), name: "أحمد محمد", phone: "01001234567" });
+        customers.push({ id: Date.now(), name: "سارة علي", phone: "01109876543" });
+        repairOrders.push({ id: Date.now(), customer: "أحمد محمد", device: "iPhone 12", price: 550, date: new Date().toISOString().slice(0,10), status: "قيد الصيانة" });
+        repairOrders.push({ id: Date.now(), customer: "سارة علي", device: "Samsung S21", price: 350, date: new Date().toISOString().slice(0,10), status: "تم التسليم" });
+        spareParts.push({ id: Date.now(), name: "شاشة iPhone 13", sellPrice: 450, qty: 8 });
+        saveAll();
+        alert("✅ تم إضافة بيانات تجريبية بنجاح!");
+    };
+    
+    function loadCustomersToPOS(){
+        document.getElementById('posCustomer').innerHTML = `<option value="">اختر العميل</option>` + customers.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+    }
+    
+    function renderCart(){
+        let total = 0;
+        document.getElementById('cartList').innerHTML = cart.map(c=>{ total += c.price; return `<div class="order-item"><div>${c.name}</div><div>${c.price} ج.م</div></div>`; }).join('');
+        document.getElementById('cartTotal').innerText = "الإجمالي: " + total + " ج.م";
+    }
+    
+    window.addToCart = () => {
+        let name = document.getElementById('posItem').value;
+        let price = Number(document.getElementById('posPrice').value);
+        if(!name || !price) return;
+        cart.push({name, price});
+        renderCart();
+        document.getElementById('posItem').value = "";
+        document.getElementById('posPrice').value = "";
+    };
+    
+    window.checkout = () => {
+        let customer = document.getElementById('posCustomer').value;
+        if(!customer || cart.length === 0) { alert("اختر عميل وأضف منتجات"); return; }
+        let total = cart.reduce((s,c)=>s+c.price,0);
+        repairOrders.push({ id: Date.now(), customer: customer, device: "فاتورة POS", price: total, date: new Date().toISOString().slice(0,10), status: "تم التسليم" });
+        cart = [];
+        renderCart();
+        saveAll();
+        alert("تم إنشاء الفاتورة");
+    };
+    
     function renderAll(){
+        // الإحصائيات الرئيسية
         const totalRevenue = repairOrders.reduce((s,o)=>s+o.price,0);
         const totalExpenses = expenses.reduce((s,e)=>s+e.amount,0);
         const profit = totalRevenue - totalExpenses;
@@ -293,17 +325,17 @@
             <div class="stat-card"><h3>📈 الأرباح</h3><div class="value">${profit} ج.م</div></div>
             <div class="stat-card"><h3>📦 قيمة المخزون</h3><div class="value">${inventoryValue} ج.م</div></div>
         `;
+        document.getElementById('recentOrders').innerHTML = repairOrders.slice(0,3).map(o=>`<div class="order-item"><div><strong>${o.customer}</strong> - ${o.device} - ${o.price} ج.م</div><div>${o.status}</div></div>`).join('');
         
-        document.getElementById('recentOrders').innerHTML = repairOrders.slice(0,5).map(o=>`<div class="order-item"><div><strong>${o.customer}</strong> - ${o.device} - ${o.price} ج.م</div><div>${o.status}</div></div>`).join('');
-        
+        // عرض كروت أوامر الصيانة
         document.getElementById('repairList').innerHTML = repairOrders.map(o=>`
-            <div class="card" style="margin-bottom:15px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div><h3 style="margin-bottom:5px;">${o.customer}</h3><div style="color:#64748b;">${o.device}</div></div>
-                    <div><span style="padding:6px 12px; border-radius:20px; background:${getStatusColor(o.status)}; font-size:12px; color:white;">${o.status}</span></div>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between;">
+                    <div><h3>${o.customer}</h3><div style="color:#64748b;">${o.device}</div></div>
+                    <div><span style="padding:6px 12px; border-radius:20px; background:${getStatusColor(o.status)}; color:white;">${o.status}</span></div>
                 </div>
-                <hr style="margin:10px 0;opacity:.1;">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
+                <hr style="margin:10px 0;">
+                <div style="display:flex; justify-content:space-between;">
                     <div>💰 ${o.price} ج.م</div>
                     <div><button class="btn-sm" onclick="changeStatus(${o.id})">تغيير الحالة</button><button class="btn-sm" style="background:#ef4444;" onclick="deleteOrder(${o.id})">حذف</button></div>
                 </div>
@@ -311,27 +343,18 @@
         `).join('');
         
         document.getElementById('partsList').innerHTML = spareParts.map(p=>`<div class="order-item"><div>${p.name} - ${p.sellPrice} ج.م - كمية: ${p.qty}</div><button class="btn-sm" onclick="deletePart(${p.id})">حذف</button></div>`).join('');
-        
         document.getElementById('expensesList').innerHTML = expenses.map(e=>`<div class="order-item"><div>${e.title} - ${e.amount} ج.م</div><button class="btn-sm" onclick="deleteExpense(${e.id})">حذف</button></div>`).join('');
         
         document.getElementById('customersList').innerHTML = customers.map(c=>{
             let orders = repairOrders.filter(o=>o.customer === c.name);
             let total = orders.reduce((s,o)=>s+o.price,0);
-            return `<div class="card" style="margin-bottom:15px;">
-                <div style="display:flex;justify-content:space-between;">
-                    <div><h3>${c.name}</h3><div style="color:#64748b;">📞 ${c.phone}</div></div>
-                    <div><span style="background:#22c55e;padding:5px 10px;border-radius:20px; color:white;">${total} ج.م</span></div>
-                </div>
-                <hr style="margin:10px 0;opacity:.1;">
-                <div style="font-size:13px;color:#64748b;">عدد العمليات: ${orders.length}</div>
-                <div style="margin-top:10px;"><button class="btn-sm" onclick="viewCustomer('${c.name}')">عرض التفاصيل</button><button class="btn-sm" style="background:#ef4444;" onclick="deleteCustomer(${c.id})">حذف</button></div>
-            </div>`;
+            return `<div class="card"><div><h3>${c.name}</h3><div>📞 ${c.phone}</div></div><div><span style="background:#22c55e;padding:5px 10px;border-radius:20px; color:white;">${total} ج.م</span></div><hr><div>عدد العمليات: ${orders.length}</div><div><button class="btn-sm" onclick="viewCustomer('${c.name}')">عرض التفاصيل</button><button class="btn-sm" style="background:#ef4444;" onclick="deleteCustomer(${c.id})">حذف</button></div></div>`;
         }).join('');
         
-        let totalOrders = repairOrders.length;
-        let done = repairOrders.filter(o=>o.status.includes("تم")).length;
-        let progress = repairOrders.filter(o=>o.status.includes("قيد")).length;
-        let revenue = repairOrders.reduce((s,o)=>s+o.price,0);
+        const totalOrders = repairOrders.length;
+        const done = repairOrders.filter(o=>o.status.includes("تم")).length;
+        const progress = repairOrders.filter(o=>o.status.includes("قيد")).length;
+        const revenue = repairOrders.reduce((s,o)=>s+o.price,0);
         document.getElementById('rep_totalOrders').innerText = totalOrders;
         document.getElementById('rep_done').innerText = done;
         document.getElementById('rep_progress').innerText = progress;
@@ -339,12 +362,7 @@
         document.getElementById('reportsTable').innerHTML = repairOrders.map(o=>`<div class="order-item"><div>${o.customer} - ${o.device}</div><div>${o.status} | ${o.price} ج.م</div></div>`).join('');
     }
     
-    let cart = [];
-    function loadCustomersToPOS(){ document.getElementById('posCustomer').innerHTML = `<option value="">اختر العميل</option>` + customers.map(c=>`<option value="${c.name}">${c.name}</option>`).join(''); }
-    window.addToCart = ()=>{ let name = document.getElementById('posItem').value; let price = Number(document.getElementById('posPrice').value); if(!name || !price) return; cart.push({name, price}); renderCart(); document.getElementById('posItem').value = ""; document.getElementById('posPrice').value = ""; };
-    function renderCart(){ let total = 0; document.getElementById('cartList').innerHTML = cart.map(c=>{ total += c.price; return `<div class="order-item"><div>${c.name}</div><div>${c.price} ج.م</div></div>`; }).join(''); document.getElementById('cartTotal').innerText = "الإجمالي: " + total + " ج.م"; }
-    window.checkout = ()=>{ let customer = document.getElementById('posCustomer').value; if(!customer || cart.length === 0){ alert("اختر عميل وأضف منتجات"); return; } let total = cart.reduce((s,c)=>s+c.price,0); repairOrders.push({ id: Date.now(), customer: customer, device: "فاتورة POS", price: total, date: new Date().toISOString().slice(0,10), status: "تم التسليم" }); cart = []; renderCart(); saveAll(); alert("تم إنشاء الفاتورة بنجاح"); };
-    
+    // تعريف الدوال العامة
     window.addSampleOrder = () => { repairOrders.push({ id:Date.now(), customer:"عميل جديد", device:"جهاز جديد", price:200, date:new Date().toISOString().slice(0,10), status:"قيد الصيانة" }); saveAll(); };
     window.addSamplePart = () => { spareParts.push({ id:Date.now(), name:"قطعة جديدة", sellPrice:100, qty:10 }); saveAll(); };
     window.addSampleExpense = () => { expenses.push({ id:Date.now(), title:"مصروف جديد", amount:300, date:new Date().toISOString().slice(0,10) }); saveAll(); };
@@ -354,19 +372,19 @@
     window.deleteExpense = (id) => { expenses = expenses.filter(e=>e.id!=id); saveAll(); };
     window.deleteCustomer = (id) => { customers = customers.filter(c=>c.id!=id); saveAll(); };
     window.changeStatus = (id) => { let order = repairOrders.find(o=>o.id==id); if(order){ let newStatus = prompt("الحالة الجديدة (قيد الصيانة / تم التسليم / ملغي)", order.status); if(newStatus) { order.status = newStatus; saveAll(); } } };
-    window.viewCustomer = (name) => { let orders = repairOrders.filter(o => o.customer === name); document.getElementById('customersList').innerHTML = `<div class="card"><div style="display:flex; justify-content:space-between; align-items:center;"><h3>تفاصيل العميل: ${name}</h3><button class="btn-sm" onclick="renderAll()">🔙 رجوع</button></div><hr style="margin:15px 0; opacity:0.1;"><div style="margin-top:15px;">${orders.map(o => `<div class="order-item" style="margin-bottom:10px;"><div>🔧 ${o.device}</div><div>${o.status} | 💰 ${o.price} ج.م</div></div>`).join('')}${orders.length === 0 ? '<div style="color:#64748b;">لا توجد عمليات لهذا العميل</div>' : ''}</div></div>`; };
+    window.viewCustomer = (name) => { let orders = repairOrders.filter(o => o.customer === name); document.getElementById('customersList').innerHTML = `<div class="card"><div><h3>تفاصيل العميل: ${name}</h3><button class="btn-sm" onclick="renderAll()">رجوع</button></div><hr>${orders.map(o => `<div class="order-item"><div>🔧 ${o.device}</div><div>${o.status} | 💰 ${o.price} ج.م</div></div>`).join('')}</div>`; };
     
     let pages = ['dashboard','repair','inventory','expenses','customers','pos','reports','subscriptions'];
     window.showPage = (page) => { 
-        pages.forEach(p => { document.getElementById(p+'Page').style.display = 'none'; });
-        document.getElementById(page+'Page').style.display = 'block'; 
+        pages.forEach(p => { let el = document.getElementById(p+'Page'); if(el) el.style.display = 'none'; });
+        let selectedPage = document.getElementById(page+'Page');
+        if(selectedPage) selectedPage.style.display = 'block';
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.querySelector(`[data-page="${page}"]`).classList.add('active');
+        let activeNav = document.querySelector(`[data-page="${page}"]`);
+        if(activeNav) activeNav.classList.add('active');
         if(page === 'pos') loadCustomersToPOS();
     };
-    document.querySelectorAll('.nav-item').forEach(nav=>{ 
-        nav.addEventListener('click',()=>{ let pg = nav.getAttribute('data-page'); if(pg) showPage(pg); }); 
-    });
+    document.querySelectorAll('.nav-item').forEach(nav=>{ nav.addEventListener('click',()=>{ let pg = nav.getAttribute('data-page'); if(pg) showPage(pg); }); });
     
     async function loginSuccess(user) {
         document.getElementById('loginScreen').style.display = 'none';
