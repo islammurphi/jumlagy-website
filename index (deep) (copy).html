@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Jumlagy ERB - نظامك المتكامل للإدارة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: 'Cairo', sans-serif; direction: rtl; min-height: 100vh; transition: background 0.3s ease; }
+        body.dark-mode { background: linear-gradient(135deg, #0f172a 0%, #020617 100%); color: #e2e8f0; }
+        body.dark-mode .section-card, body.dark-mode .stat-card, body.dark-mode .header, body.dark-mode .item-card, body.dark-mode .settings-group, body.dark-mode .user-card, body.dark-mode .modal-content { background: #1e293b; border-color: #334155; }
+
+        /* نظام الإشعارات */
+        .toast-notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 12px 28px; border-radius: 60px; font-weight: 600; font-size: 0.9rem; z-index: 10000; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; opacity: 0; transition: all 0.3s ease; font-family: 'Cairo', sans-serif; direction: rtl; white-space: nowrap; }
+        .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast-notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .toast-notification.success { background: linear-gradient(135deg, #22c55e, #16a34a); }
+
+        /* أنيميشن */
+        @keyframes fadeSlideUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* شاشة تسجيل الدخول */
+        .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+        .login-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 40px 35px; border-radius: 35px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2); animation: fadeSlideUp 0.5s ease; }
+        .login-card h2 { color: #1e293b; margin-bottom: 8px; font-size: 1.8rem; font-weight: 800; }
+        .login-card h2 i { color: #3b82f6; margin-left: 10px; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i:first-child { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1rem; z-index: 1; }
+        .input-group input { width: 100%; padding: 14px 50px 14px 20px; border-radius: 50px; border: 2px solid #e2e8f0; outline: none; font-family: 'Cairo', sans-serif; font-size: 1rem; transition: all 0.3s ease; background: white; }
+        .input-group input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+        
+        /* أزرار محسنة */
+        .btn-login, .btn-register, .btn, .btn-danger, .btn-success, .btn-warning, .btn-icon, .btn-status, .btn-delete { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .btn-login, .btn-register { width: 100%; padding: 14px; border-radius: 50px; border: none; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 1rem; }
+        .btn-login { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; margin-top: 10px; }
+        .btn-login:hover, .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); }
+        .btn-register { background: transparent; color: #3b82f6; border: 2px solid #3b82f6; margin-top: 12px; }
+        .btn-register:hover { background: #3b82f6; color: white; transform: translateY(-2px); }
+        .btn { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 10px 20px; border-radius: 50px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-family: 'Cairo', sans-serif; font-size: 0.9rem; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 10px 20px; border-radius: 50px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+        .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 10px 20px; border-radius: 50px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 10px 20px; border-radius: 50px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+        .btn-status { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 6px 14px; border-radius: 50px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px; border: none; font-weight: 600; }
+        .btn-delete { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 6px 14px; border-radius: 50px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px; border: none; font-weight: 600; }
+        .btn-status:hover, .btn-delete:hover, .btn-danger:hover, .btn-success:hover, .btn-warning:hover { transform: translateY(-2px); filter: brightness(1.05); }
+
+        /* Dashboard Layout */
+        .dashboard { display: none; min-height: 100vh; }
+        .app-layout { display: flex; min-height: 100vh; position: relative; }
+        .sidebar { width: 270px; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); color: #1e293b; position: fixed; right: 0; top: 0; bottom: 0; overflow-y: auto; transition: transform 0.3s ease; box-shadow: -4px 0 20px rgba(0, 0, 0, 0.05); z-index: 100; border-left: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        body.dark-mode .sidebar { background: linear-gradient(180deg, #0f172a 0%, #020617 100%); border-left-color: #334155; }
+        .sidebar-header { text-align: center; padding: 25px 20px; border-bottom: 1px solid #e2e8f0; }
+        .sidebar-header h2 { font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #06b6d4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; margin: 6px 12px; color: #64748b; border-radius: 40px; cursor: pointer; transition: all 0.3s ease; font-weight: 600; font-size: 0.95rem; }
+        .nav-item:hover { background: rgba(59, 130, 246, 0.1); color: #2563eb; transform: translateX(-3px); }
+        .nav-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .main-content { flex: 1; margin-right: 270px; padding: 20px; background: #f0f4f8; transition: 0.3s; min-height: 100vh; }
+        body.dark-mode .main-content { background: #0f172a; }
+        .header { background: white; padding: 12px 20px; border-radius: 50px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 25px; text-align: center; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+        .section-card { background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; border: 1px solid #e2e8f0; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; }
+        .grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .item-card, .user-card { background: #f8fafc; border-radius: 22px; padding: 18px; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
+        .user-card { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .user-card.active-user { border-right: 4px solid #22c55e; background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+        .user-card.inactive-user { border-right: 4px solid #ef4444; background: linear-gradient(135deg, #fef2f2, #fee2e2); }
+        .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; }
+        .status-active { background: #22c55e20; color: #22c55e; border: 1px solid #22c55e; }
+        .status-inactive { background: #ef444420; color: #ef4444; border: 1px solid #ef4444; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-content { background: white; padding: 30px; border-radius: 35px; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; animation: fadeSlideUp 0.3s ease; }
+        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 12px 18px; margin: 10px 0; border-radius: 50px; border: 2px solid #e2e8f0; font-family: 'Cairo', sans-serif; font-size: 0.9rem; }
+
+        /* إعدادات حديثة وجميلة */
+        .settings-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .settings-group {
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            border-radius: 28px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        body.dark-mode .settings-group {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-color: #334155;
+        }
+        .settings-group:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+        }
+        .settings-group h4 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-right: 4px solid #3b82f6;
+            padding-right: 15px;
+        }
+        .settings-group h4 i {
+            font-size: 1.3rem;
+        }
+        .settings-field {
+            margin-bottom: 16px;
+        }
+        .settings-field label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .settings-group input, .settings-group select {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 50px;
+            border: 2px solid #e2e8f0;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        body.dark-mode .settings-group input, body.dark-mode .settings-group select {
+            background: #0f172a;
+            border-color: #334155;
+            color: white;
+        }
+        .settings-group input:focus, .settings-group select:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+        .technicians-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .technician-tag {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 8px 18px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .technician-tag {
+            background: #0f172a;
+            border-color: #334155;
+        }
+        .technician-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .shop-logo-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: 12px;
+            border: 3px solid #3b82f6;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .image-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .image-preview img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 2px solid #e2e8f0; }
+        .btn-full { width: 100%; justify-content: center; margin-top: 10px; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #3b82f6, #06b6d4); border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(100%); position: fixed; top: 0; right: 0; height: 100%; z-index: 200; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-right: 0; padding: 15px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .grid-list { grid-template-columns: 1fr; }
+            .user-card { flex-direction: column; text-align: center; }
+            .menu-toggle { display: flex; position: fixed; bottom: 20px; left: 20px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; width: 50px; height: 50px; border-radius: 50%; align-items: center; justify-content: center; cursor: pointer; z-index: 150; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: none; }
+        }
+        @media (min-width: 769px) { .menu-toggle { display: none; } }
+        .menu-toggle { display: none; }
+    </style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-container">
+    <div class="login-card">
+        <h2><i class="fas fa-tools"></i> Jumlagy ERB</h2>
+        <p style="margin-bottom:20px;">نظامك المتكامل للإدارة</p>
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="loginUsername" placeholder="اسم المستخدم" value="admin">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="loginPassword" placeholder="كلمة المرور" value="admin123">
+        </div>
+        <button class="btn-login" onclick="login()"><i class="fas fa-sign-in-alt"></i> دخول</button>
+        <button class="btn-register" onclick="showRegister()"><i class="fas fa-user-plus"></i> حساب جديد</button>
+    </div>
+</div>
+
+<div id="dashboardScreen" class="dashboard">
+    <div class="app-layout">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-tools"></i> Jumlagy ERB</h2>
+                <p style="font-size: 0.7rem;">نظامك المتكامل للإدارة</p>
+            </div>
+            <div class="sidebar-nav">
+                <div class="nav-item active" data-page="dashboard"><i class="fas fa-chart-line"></i> لوحة التحكم</div>
+                <div class="nav-item" data-page="repair"><i class="fas fa-wrench"></i> أوامر الصيانة</div>
+                <div class="nav-item" data-page="inventory"><i class="fas fa-boxes"></i> المخزون</div>
+                <div class="nav-item" data-page="customers"><i class="fas fa-users"></i> العملاء</div>
+                <div class="nav-item" data-page="expenses"><i class="fas fa-coins"></i> المصروفات</div>
+            </div>
+            <div class="sidebar-footer">
+                <div class="nav-item" data-page="settings"><i class="fas fa-sliders-h"></i> الإعدادات</div>
+                <div class="nav-item" id="adminNav" data-page="admin" style="display:none;"><i class="fas fa-crown"></i> إدارة المستخدمين</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="shop-info">
+                    <img id="shopLogo" src="" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" alt="">
+                    <span id="shopNameHeader" style="font-weight: 700;"></span>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <span id="userNameDisplay"></span>
+                    <button class="btn" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+                    <button class="btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                </div>
+            </div>
+            <div id="dashboardSection" class="page-section"><div class="stats-grid" id="statsGrid"></div><div class="section-card"><div class="section-header"><h3><i class="fas fa-clock"></i> آخر أوامر الصيانة</h3><button class="btn" onclick="openRepairModal()"><i class="fas fa-plus"></i> أمر جديد</button></div><div id="repairList" class="grid-list"></div></div></div>
+            <div id="repairSection" class="page-section" style="display:none;"><div class="section-card"><div class="section-header"><h3><i class="fas fa-list"></i> جميع أوامر الصيانة</h3><button class="btn" onclick="openRepairModal()"><i class="fas fa-plus"></i> أمر جديد</button></div><div id="repairFullList" class="grid-list"></div></div></div>
+            <div id="inventorySection" class="page-section" style="display:none;"><div class="section-card"><div class="section-header"><h3><i class="fas fa-box"></i> قطع الغيار</h3><button class="btn" onclick="openPartModal()"><i class="fas fa-plus"></i> قطعة جديدة</button></div><div id="partsList" class="grid-list"></div></div></div>
+            <div id="customersSection" class="page-section" style="display:none;"><div class="section-card"><div class="section-header"><h3><i class="fas fa-user-friends"></i> العملاء</h3><button class="btn" onclick="openCustomerModal()"><i class="fas fa-user-plus"></i> عميل جديد</button></div><div id="customersList" class="grid-list"></div></div></div>
+            <div id="expensesSection" class="page-section" style="display:none;"><div class="section-card"><div class="section-header"><h3><i class="fas fa-receipt"></i> المصروفات</h3><button class="btn" onclick="openExpenseModal()"><i class="fas fa-plus-circle"></i> مصروف جديد</button></div><div id="expensesList" class="grid-list"></div></div></div>
+            
+            <div id="settingsSection" class="page-section" style="display:none;">
+                <div class="section-card">
+                    <div class="section-header"><h3><i class="fas fa-cog fa-spin"></i> إعدادات الورشة المتقدمة</h3></div>
+                    <div class="settings-grid">
+                        <!-- معلومات المحل -->
+                        <div class="settings-group">
+                            <h4><i class="fas fa-store"></i> معلومات المحل</h4>
+                            <div class="settings-field">
+                                <label><i class="fas fa-signature"></i> اسم المحل</label>
+                                <input type="text" id="shopName" placeholder="اسم المحل">
+                            </div>
+                            <div class="settings-field">
+                                <label><i class="fas fa-user-tie"></i> اسم صاحب المحل</label>
+                                <input type="text" id="shopOwner" placeholder="اسم صاحب المحل">
+                            </div>
+                            <div class="settings-field">
+                                <label><i class="fas fa-phone"></i> رقم الهاتف</label>
+                                <input type="text" id="shopPhone" placeholder="رقم الهاتف">
+                            </div>
+                            <div class="settings-field">
+                                <label><i class="fas fa-map-marker-alt"></i> العنوان</label>
+                                <input type="text" id="shopAddress" placeholder="العنوان">
+                            </div>
+                            <div class="settings-field">
+                                <label><i class="fas fa-image"></i> شعار المحل</label>
+                                <input type="file" id="shopLogoUpload" accept="image/*">
+                                <img id="shopLogoPreview" class="shop-logo-preview" style="display:none;">
+                            </div>
+                            <button class="btn-success btn-full" onclick="saveShopSettings()"><i class="fas fa-save"></i> حفظ معلومات المحل</button>
+                        </div>
+
+                        <!-- الفنيين -->
+                        <div class="settings-group">
+                            <h4><i class="fas fa-users"></i> إدارة الفنيين</h4>
+                            <div id="techniciansListSettings" class="technicians-grid"></div>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+                                <input type="text" id="newTechnicianName" placeholder="اسم فني جديد" style="flex:1;">
+                                <button class="btn" onclick="addTechnicianFromSettings()"><i class="fas fa-plus"></i> إضافة فني</button>
+                            </div>
+                        </div>
+
+                        <!-- المظهر واللغة -->
+                        <div class="settings-group">
+                            <h4><i class="fas fa-palette"></i> المظهر واللغة</h4>
+                            <div class="settings-field">
+                                <label><i class="fas fa-language"></i> اللغة</label>
+                                <select id="languageSelect" onchange="changeLanguage()">
+                                    <option value="ar">العربية</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-full" onclick="toggleDarkMode()"><i class="fas fa-moon"></i> تبديل الوضع الليلي</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="adminSection" class="page-section" style="display:none;"><div class="section-card"><div class="section-header"><h3><i class="fas fa-users-cog"></i> إدارة المستخدمين</h3><button class="btn-warning" onclick="showUserModal()"><i class="fas fa-user-plus"></i> مستخدم جديد</button></div><div id="usersList" class="grid-list"></div></div></div>
+        </div>
+    </div>
+</div>
+<button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+
+<!-- مودالت -->
+<div id="repairModal" class="modal"><div class="modal-content"><h3><i class="fas fa-tools"></i> أمر صيانة جديد</h3><select id="repairCustomerSelect"><option value="">اختر العميل</option><option value="new">➕ عميل جديد</option></select><div id="newCustomerFields" style="display:none;"><input type="text" id="newCustomerName" placeholder="اسم العميل الجديد"><input type="text" id="newCustomerPhone" placeholder="رقم الهاتف"></div><input id="repairDevice" placeholder="الجهاز"><select id="repairTechnician"><option value="">اختر الفني</option></select><input id="repairReceiver" placeholder="المستلم"><input type="datetime-local" id="repairReceiveDate"><input type="datetime-local" id="repairDeliveryDate"><input type="number" id="repairPrice" placeholder="السعر"><input type="number" id="repairTechnicianFee" placeholder="أجر الفني"><textarea id="repairIssue" rows="3" placeholder="وصف المشكلة"></textarea><select id="repairSparePart"><option value="">اختر قطعة غيار</option></select><div id="selectedPartsList" style="margin: 10px 0;"></div><button class="btn" onclick="addPartToRepair()" style="width:100%; margin:5px 0;"><i class="fas fa-plus-circle"></i> إضافة قطعة</button><input type="file" id="repairImages" accept="image/*" multiple><div id="repairImagesPreview" class="image-preview"></div><div style="display: flex; gap: 10px; margin-top: 15px;"><button class="btn-success" onclick="saveRepairOrder()" style="flex:1;"><i class="fas fa-check"></i> حفظ</button><button class="btn" onclick="closeModal('repairModal')" style="flex:1;"><i class="fas fa-times"></i> إلغاء</button></div></div></div>
+<div id="genericModal" class="modal"><div class="modal-content"><h3 id="modalTitle">إضافة</h3><div id="modalFields"></div><div style="display: flex; gap: 10px; margin-top: 15px;"><button class="btn-success" onclick="saveGenericItem()" style="flex:1;">حفظ</button><button class="btn" onclick="closeGenericModal()" style="flex:1;">إلغاء</button></div></div></div>
+<div id="userModal" class="modal"><div class="modal-content"><h3><i class="fas fa-user-plus"></i> مستخدم جديد</h3><input type="text" id="newUsername" placeholder="اسم المستخدم"><input type="password" id="newPassword" placeholder="كلمة المرور"><select id="newRole"><option value="user">مستخدم عادي</option><option value="admin">أدمن</option></select><input type="number" id="subDays" placeholder="أيام الاشتراك" value="30"><div style="display: flex; gap: 10px; margin-top: 15px;"><button class="btn-success" onclick="addUserByAdmin()" style="flex:1;">إنشاء</button><button class="btn" onclick="closeUserModal()" style="flex:1;">إلغاء</button></div></div></div>
+
+<script>
+    // دالة إصلاح بيانات المستخدمين
+    function fixUsersData() {
+        let existingUsers = localStorage.getItem('users');
+        let users = [];
+        try {
+            if(existingUsers) {
+                users = JSON.parse(existingUsers);
+                if(!Array.isArray(users)) users = [];
+            }
+        } catch(e) { users = []; }
+        users = users.filter(u => u && typeof u === 'object' && u.username);
+        const adminExists = users.find(u => u.username === 'admin');
+        if(!adminExists) {
+            users.push({ id: 1, username: "admin", password: "admin123", role: "admin", subscription: "مدى الحياة", endDate: null, active: true });
+        } else {
+            const adminUser = users.find(u => u.username === 'admin');
+            adminUser.password = "admin123";
+            adminUser.active = true;
+            adminUser.role = "admin";
+        }
+        localStorage.setItem('users', JSON.stringify(users));
+        return users;
+    }
+    
+    let users = fixUsersData();
+
+    function showToast(message, type) {
+        let toast = document.getElementById('toastNotification');
+        if (!toast) { toast = document.createElement('div'); toast.id = 'toastNotification'; toast.className = 'toast-notification'; document.body.appendChild(toast); }
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+        toast.className = `toast-notification ${type}`;
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => toast.classList.remove('show'), 1500);
+    }
+
+    let technicians = JSON.parse(localStorage.getItem('technicians')) || [{ id: 1, name: "أحمد" }, { id: 2, name: "محمد" }, { id: 3, name: "سعيد" }];
+    let repairs = JSON.parse(localStorage.getItem('repairs')) || [];
+    let parts = JSON.parse(localStorage.getItem('parts')) || [];
+    let customers = JSON.parse(localStorage.getItem('customers')) || [];
+    let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+    let shopSettings = JSON.parse(localStorage.getItem('shopSettings')) || { shopName: "Jumlagy ERB", shopOwner: "", shopPhone: "", shopAddress: "", shopLogo: "" };
+    let lang = localStorage.getItem('lang') || 'ar';
+    let darkMode = localStorage.getItem('darkMode') === 'true';
+
+    if(customers.length===0) customers.push({ id:1, userId:1, name:"أحمد محمد", phone:"01001234567" });
+    if(parts.length===0) parts.push({ id:1, userId:1, name:"شاشة iPhone", price:450, qty:10 });
+    if(expenses.length===0) expenses.push({ id:1, userId:1, title:"إيجار المحل", amount:5000, date:new Date().toISOString().slice(0,10) });
+
+    let currentUser = null;
+    let tempImages = [], tempSpareParts = [];
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    function applyDarkMode() { if(darkMode) document.body.classList.add('dark-mode'); else document.body.classList.remove('dark-mode'); }
+    function toggleDarkMode() { darkMode = !darkMode; localStorage.setItem('darkMode', darkMode); applyDarkMode(); }
+    function changeLanguage() { lang = document.getElementById('languageSelect').value; localStorage.setItem('lang', lang); renderAll(); }
+    function updateUI() { document.getElementById('shopNameHeader').innerText = shopSettings.shopName || "Jumlagy ERB"; if(shopSettings.shopLogo) document.getElementById('shopLogo').src = shopSettings.shopLogo; }
+
+    function saveShopSettings() {
+        shopSettings.shopName = document.getElementById('shopName').value;
+        shopSettings.shopOwner = document.getElementById('shopOwner').value;
+        shopSettings.shopPhone = document.getElementById('shopPhone').value;
+        shopSettings.shopAddress = document.getElementById('shopAddress').value;
+        let file = document.getElementById('shopLogoUpload').files[0];
+        if(file) { let reader = new FileReader(); reader.onload = function(e) { shopSettings.shopLogo = e.target.result; localStorage.setItem('shopSettings', JSON.stringify(shopSettings)); updateUI(); document.getElementById('shopLogoPreview').src = e.target.result; document.getElementById('shopLogoPreview').style.display = 'block'; }; reader.readAsDataURL(file); }
+        localStorage.setItem('shopSettings', JSON.stringify(shopSettings));
+        updateUI();
+        showToast("تم حفظ إعدادات المحل", "success");
+    }
+    function addTechnicianFromSettings() { let name = document.getElementById('newTechnicianName').value.trim(); if(name) { technicians.push({ id: Date.now(), name }); saveAll(); document.getElementById('newTechnicianName').value = ''; renderTechniciansList(); showToast("تم إضافة الفني", "success"); } else showToast("يرجى إدخال اسم", "error"); }
+    function renderTechniciansList() { document.getElementById('techniciansListSettings').innerHTML = technicians.map(t => `<div class="technician-tag"><i class="fas fa-user-hard-hat"></i> ${t.name} <button class="btn-delete" style="padding:4px 12px;" onclick="deleteTechnician(${t.id})"><i class="fas fa-trash"></i> حذف</button></div>`).join(''); }
+    function saveAll() { localStorage.setItem('users', JSON.stringify(users)); localStorage.setItem('technicians', JSON.stringify(technicians)); localStorage.setItem('repairs', JSON.stringify(repairs)); localStorage.setItem('parts', JSON.stringify(parts)); localStorage.setItem('customers', JSON.stringify(customers)); localStorage.setItem('expenses', JSON.stringify(expenses)); renderAll(); }
+
+    function renderAll() {
+        if(!currentUser) return;
+        let myRepairs = repairs.filter(r => r.userId === currentUser.id);
+        let myParts = parts.filter(p => p.userId === currentUser.id);
+        let myCustomers = customers.filter(c => c.userId === currentUser.id);
+        let myExpenses = expenses.filter(e => e.userId === currentUser.id);
+        let totalRepairs = myRepairs.reduce((s,r)=>s+(r.price||0),0);
+        let totalExpenses = myExpenses.reduce((s,e)=>s+e.amount,0);
+        let profit = totalRepairs - totalExpenses;
+        let totalParts = myParts.reduce((s,p)=>s+(p.price*p.qty),0);
+        document.getElementById('statsGrid').innerHTML = `<div class="stat-card"><i class="fas fa-dollar-sign"></i><h3>الإيرادات</h3><div>${totalRepairs} ج.م</div></div><div class="stat-card"><i class="fas fa-chart-line"></i><h3>المصروفات</h3><div>${totalExpenses} ج.م</div></div><div class="stat-card"><i class="fas fa-chart-line"></i><h3>الأرباح</h3><div>${profit} ج.م</div></div><div class="stat-card"><i class="fas fa-box"></i><h3>المخزون</h3><div>${totalParts} ج.م</div></div>`;
+        document.getElementById('repairList').innerHTML = myRepairs.slice(0,6).map(r => `<div class="item-card"><div><strong><i class="fas fa-mobile-alt"></i> ${r.device}</strong> - ${r.customerName}</div><div><i class="fas fa-user-cog"></i> ${r.technician} | 💰 ${r.price} ج.م</div><button class="btn-delete" style="margin-top:10px;" onclick="deleteRepair(${r.id})"><i class="fas fa-trash"></i> حذف</button></div>`).join('');
+        document.getElementById('repairFullList').innerHTML = myRepairs.map(r => `<div class="item-card"><div><strong><i class="fas fa-mobile-alt"></i> ${r.device}</strong> - ${r.customerName}</div><div><i class="fas fa-user-cog"></i> ${r.technician} | 💰 ${r.price} ج.م</div><button class="btn-delete" onclick="deleteRepair(${r.id})"><i class="fas fa-trash"></i> حذف</button></div>`).join('');
+        document.getElementById('partsList').innerHTML = myParts.map(p => `<div class="item-card"><div><strong><i class="fas fa-microchip"></i> ${p.name}</strong></div><div>💰 ${p.price} ج.م | 📦 ${p.qty}</div><button class="btn-delete" onclick="deletePart(${p.id})"><i class="fas fa-trash"></i> حذف</button></div>`).join('');
+        document.getElementById('customersList').innerHTML = myCustomers.map(c => `<div class="item-card"><div><strong><i class="fas fa-user"></i> ${c.name}</strong></div><div><i class="fas fa-phone"></i> ${c.phone}</div><button class="btn-delete" onclick="deleteCustomer(${c.id})"><i class="fas fa-trash"></i> حذف</button></div>`).join('');
+        document.getElementById('expensesList').innerHTML = myExpenses.map(e => `<div class="item-card"><div><strong><i class="fas fa-receipt"></i> ${e.title}</strong></div><div>💰 ${e.amount} ج.م</div><button class="btn-delete" onclick="deleteExpense(${e.id})"><i class="fas fa-trash"></i> حذف</button></div>`).join('');
+        if(currentUser.role === 'admin') {
+            document.getElementById('adminNav').style.display = 'flex';
+            document.getElementById('usersList').innerHTML = users.map(u => `<div class="user-card ${u.active ? 'active-user' : 'inactive-user'}"><div class="user-info"><h4><i class="fas fa-user-circle"></i> ${u.username}</h4><p><i class="fas fa-tag"></i> ${u.role === 'admin' ? 'أدمن' : 'مستخدم'}</p><p><span class="status-badge ${u.active ? 'status-active' : 'status-inactive'}"><i class="fas ${u.active ? 'fa-check-circle' : 'fa-times-circle'}"></i> ${u.active ? 'نشط' : 'غير نشط'}</span></p></div><div class="user-actions"><button class="btn-status" onclick="toggleUserStatus(${u.id})"><i class="fas ${u.active ? 'fa-ban' : 'fa-check'}"></i> تغيير الحالة</button><button class="btn-delete" onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i> حذف</button></div></div>`).join('');
+        }
+        updateUI();
+        renderTechniciansList();
+        document.getElementById('userNameDisplay').innerHTML = `<i class="fas fa-user"></i> ${currentUser.username}`;
+        document.getElementById('shopName').value = shopSettings.shopName || '';
+        document.getElementById('shopOwner').value = shopSettings.shopOwner || '';
+        document.getElementById('shopPhone').value = shopSettings.shopPhone || '';
+        document.getElementById('shopAddress').value = shopSettings.shopAddress || '';
+        if(shopSettings.shopLogo) { document.getElementById('shopLogoPreview').src = shopSettings.shopLogo; document.getElementById('shopLogoPreview').style.display = 'block'; }
+        document.getElementById('languageSelect').value = lang;
+    }
+
+    function openRepairModal() {
+        tempImages = []; tempSpareParts = [];
+        document.getElementById('repairCustomerSelect').innerHTML = '<option value="">اختر العميل</option><option value="new">➕ عميل جديد</option>' + customers.filter(c => c.userId === currentUser.id).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        document.getElementById('repairTechnician').innerHTML = '<option value="">اختر الفني</option>' + technicians.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+        document.getElementById('repairSparePart').innerHTML = '<option value="">اختر قطعة غيار</option>' + parts.filter(p => p.userId === currentUser.id).map(p => `<option value='${JSON.stringify(p)}'>${p.name} (${p.price} ج.م - ${p.qty})</option>`).join('');
+        document.getElementById('newCustomerFields').style.display = 'none';
+        document.getElementById('repairModal').style.display = 'flex';
+        document.getElementById('repairCustomerSelect').onchange = function() { document.getElementById('newCustomerFields').style.display = this.value === 'new' ? 'block' : 'none'; };
+    }
+    window.addPartToRepair = () => { let selected = document.getElementById('repairSparePart').value; if(selected) { let part = JSON.parse(selected); let existing = tempSpareParts.find(p => p.id === part.id); if(existing) existing.qty++; else tempSpareParts.push({ id: part.id, name: part.name, price: part.price, qty: 1 }); document.getElementById('selectedPartsList').innerHTML = tempSpareParts.map(p => `<div style="background:#e2e8f0; padding:8px; margin:5px 0; border-radius:20px;"><i class="fas fa-microchip"></i> ${p.name} - ${p.price} ج.م - ${p.qty} <button onclick="removePartFromRepair(${p.id})" style="background:#ef4444; border:none; border-radius:20px; padding:2px 10px;">❌</button></div>`).join(''); } };
+    window.removePartFromRepair = (id) => { tempSpareParts = tempSpareParts.filter(p => p.id !== id); document.getElementById('selectedPartsList').innerHTML = tempSpareParts.map(p => `<div><i class="fas fa-microchip"></i> ${p.name} - ${p.price}ج.م × ${p.qty} <button onclick="removePartFromRepair(${p.id})">❌</button></div>`).join(''); };
+    document.getElementById('repairImages')?.addEventListener('change', function(e) { let files = Array.from(e.target.files); tempImages = []; document.getElementById('repairImagesPreview').innerHTML = ''; files.forEach(file => { let reader = new FileReader(); reader.onload = function(ev) { tempImages.push(ev.target.result); let img = document.createElement('img'); img.src = ev.target.result; document.getElementById('repairImagesPreview').appendChild(img); }; reader.readAsDataURL(file); }); });
+    window.saveRepairOrder = () => {
+        let customerId = document.getElementById('repairCustomerSelect').value, customerName = '';
+        if(customerId === 'new') { let newName = document.getElementById('newCustomerName').value.trim(); if(!newName) { showToast("يرجى إدخال اسم العميل", "error"); return; } let newCustomer = { id: Date.now(), userId: currentUser.id, name: newName, phone: document.getElementById('newCustomerPhone').value }; customers.push(newCustomer); customerName = newName; customerId = newCustomer.id; }
+        else { let customer = customers.find(c => c.id == customerId); if(!customer) { showToast("اختر العميل", "error"); return; } customerName = customer.name; }
+        tempSpareParts.forEach(part => { let dbPart = parts.find(p => p.id === part.id); if(dbPart) dbPart.qty -= part.qty; });
+        repairs.push({ id: Date.now(), userId: currentUser.id, customerId, customerName, device: document.getElementById('repairDevice').value, technician: document.getElementById('repairTechnician').value, receiver: document.getElementById('repairReceiver').value, receiveDate: document.getElementById('repairReceiveDate').value, deliveryDate: document.getElementById('repairDeliveryDate').value, price: parseFloat(document.getElementById('repairPrice').value)||0, technicianFee: parseFloat(document.getElementById('repairTechnicianFee').value)||0, issue: document.getElementById('repairIssue').value, spareParts: tempSpareParts, images: tempImages, status: "قيد الصيانة" });
+        saveAll(); closeModal('repairModal'); showToast("تم إضافة أمر الصيانة", "success");
+    };
+    window.deleteRepair = (id) => { repairs = repairs.filter(r => r.id !== id); saveAll(); showToast("تم الحذف", "success"); };
+    window.deletePart = (id) => { parts = parts.filter(p => p.id !== id); saveAll(); showToast("تم الحذف", "success"); };
+    window.deleteCustomer = (id) => { customers = customers.filter(c => c.id !== id); saveAll(); showToast("تم الحذف", "success"); };
+    window.deleteExpense = (id) => { expenses = expenses.filter(e => e.id !== id); saveAll(); showToast("تم الحذف", "success"); };
+    window.deleteTechnician = (id) => { technicians = technicians.filter(t => t.id !== id); saveAll(); renderTechniciansList(); showToast("تم الحذف", "success"); };
+    window.toggleUserStatus = (id) => { let user = users.find(u => u.id === id); if(user) { user.active = !user.active; saveAll(); showToast(`تم ${user.active ? 'تفعيل' : 'تعطيل'} ${user.username}`, "success"); } };
+    window.deleteUser = (id) => { if(id !== currentUser.id) { users = users.filter(u => u.id !== id); saveAll(); showToast("تم حذف المستخدم", "success"); } else showToast("لا يمكن حذف نفسك", "error"); };
+    window.addUserByAdmin = () => { let username = document.getElementById('newUsername').value, password = document.getElementById('newPassword').value, role = document.getElementById('newRole').value, days = parseInt(document.getElementById('subDays').value); if(!username || !password) { showToast("املأ الحقول", "error"); return; } if(users.find(u => u.username === username)) { showToast("الاسم موجود", "error"); return; } users.push({ id: Date.now(), username, password, role, subscription: days>0 ? `${days} يوم` : "غير محدود", endDate: days>0 ? new Date(Date.now()+days*86400000).toISOString() : null, active: true }); saveAll(); closeUserModal(); showToast("تم إنشاء المستخدم", "success"); };
+    let currentGenericType = '';
+    window.openPartModal = () => { currentGenericType = 'part'; document.getElementById('modalTitle').innerHTML = '<i class="fas fa-microchip"></i> قطعة غيار'; document.getElementById('modalFields').innerHTML = `<input id="partName" placeholder="الاسم"><input id="partPrice" placeholder="السعر" type="number"><input id="partQty" placeholder="الكمية" type="number">`; document.getElementById('genericModal').style.display = 'flex'; };
+    window.openCustomerModal = () => { currentGenericType = 'customer'; document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> عميل جديد'; document.getElementById('modalFields').innerHTML = `<input id="custName" placeholder="الاسم"><input id="custPhone" placeholder="الهاتف">`; document.getElementById('genericModal').style.display = 'flex'; };
+    window.openExpenseModal = () => { currentGenericType = 'expense'; document.getElementById('modalTitle').innerHTML = '<i class="fas fa-money-bill"></i> مصروف جديد'; document.getElementById('modalFields').innerHTML = `<input id="expTitle" placeholder="البيان"><input id="expAmount" placeholder="المبلغ" type="number"><input id="expDate" type="date">`; document.getElementById('genericModal').style.display = 'flex'; };
+    window.saveGenericItem = () => {
+        if(currentGenericType === 'part') { let name = document.getElementById('partName').value, price = parseFloat(document.getElementById('partPrice').value), qty = parseInt(document.getElementById('partQty').value); if(!name) { showToast("أدخل الاسم", "error"); return; } parts.push({ id: Date.now(), userId: currentUser.id, name, price, qty }); showToast("تمت الإضافة", "success"); }
+        else if(currentGenericType === 'customer') { let name = document.getElementById('custName').value, phone = document.getElementById('custPhone').value; if(!name) { showToast("أدخل الاسم", "error"); return; } customers.push({ id: Date.now(), userId: currentUser.id, name, phone }); showToast("تمت الإضافة", "success"); }
+        else if(currentGenericType === 'expense') { let title = document.getElementById('expTitle').value, amount = parseFloat(document.getElementById('expAmount').value), date = document.getElementById('expDate').value || new Date().toISOString().slice(0,10); if(!title) { showToast("أدخل البيان", "error"); return; } expenses.push({ id: Date.now(), userId: currentUser.id, title, amount, date }); showToast("تمت الإضافة", "success"); }
+        saveAll(); closeGenericModal();
+    };
+    window.closeGenericModal = () => { document.getElementById('genericModal').style.display = 'none'; };
+    window.showUserModal = () => { document.getElementById('userModal').style.display = 'flex'; };
+    window.closeUserModal = () => { document.getElementById('userModal').style.display = 'none'; };
+    window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
+    document.querySelectorAll('.nav-item').forEach(item => { item.addEventListener('click', () => { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); item.classList.add('active'); let page = item.getAttribute('data-page'); document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none'); document.getElementById(page + 'Section').style.display = 'block'; if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open'); }); });
+    
+    window.login = () => { 
+        let username = document.getElementById('loginUsername').value;
+        let password = document.getElementById('loginPassword').value;
+        let user = users.find(u => u.username === username && u.password === password && u.active); 
+        if(user) { 
+            currentUser = user; 
+            document.getElementById('loginScreen').style.display = 'none'; 
+            document.getElementById('dashboardScreen').style.display = 'block'; 
+            applyDarkMode(); 
+            renderAll(); 
+            showToast(`مرحباً ${user.username}`, "success"); 
+        } else { 
+            let userExists = users.find(u => u.username === username);
+            if(userExists) { showToast("كلمة المرور غير صحيحة", "error"); } 
+            else { showToast("اسم المستخدم غير موجود", "error"); }
+        }
+    };
+    
+    window.showRegister = () => { let newUsername = prompt("اسم المستخدم:"); if(!newUsername) return; let newPassword = prompt("كلمة المرور:"); if(!newPassword) return; if(users.find(u => u.username === newUsername)) { showToast("الاسم موجود", "error"); return; } users.push({ id: Date.now(), username: newUsername, password: newPassword, role: "user", subscription: "تجريبي 3 أيام", endDate: new Date(Date.now()+3*86400000).toISOString(), active: true }); saveAll(); showToast("تم إنشاء الحساب", "success"); };
+    window.logout = () => { currentUser = null; document.getElementById('loginScreen').style.display = 'flex'; document.getElementById('dashboardScreen').style.display = 'none'; };
+    renderAll(); applyDarkMode();
+</script>
+</body>
+</html>
