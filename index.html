@@ -10,8 +10,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Tajawal', sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            background: #f1f5f9;
+            color: #0f172a;
         }
         .login-screen {
             display: flex;
@@ -41,53 +41,71 @@
         .app { display: flex; }
         .sidebar {
             width: 260px;
-            background: #020617;
+            background: white;
             height: 100vh;
             position: fixed;
             right: 0;
             padding: 20px;
-            border-left: 1px solid #1e293b;
+            border-left: 1px solid #e2e8f0;
         }
         .nav-item {
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 8px;
             cursor: pointer;
+            color: #334155;
+            transition: .2s;
         }
-        .nav-item:hover, .nav-item.active {
-            background: #1e293b;
+        .nav-item:hover {
+            background: #e2e8f0;
+        }
+        .nav-item.active {
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
+        }
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            right: -20px;
+            width: 4px;
+            height: 40px;
+            background: #2563eb;
+            border-radius: 10px;
         }
         .main-content {
             margin-right: 260px;
-            padding: 20px;
+            padding: 25px;
             width: 100%;
         }
         .top-bar {
             display: flex;
             justify-content: space-between;
-            background: #020617;
-            padding: 15px;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
             border-radius: 15px;
-            border: 1px solid #1e293b;
+            border: 1px solid #e2e8f0;
             margin-bottom: 20px;
         }
         .card {
-            background: rgba(255,255,255,0.06);
+            background: white;
             border-radius: 20px;
             padding: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
-            transition: .3s;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
-        .card:hover {
-            transform: translateY(-3px);
-        }
         .stat-card {
-            background: #020617;
+            background: white;
             padding: 20px;
             border-radius: 20px;
             text-align: center;
-            border: 1px solid #1e293b;
+            border: 1px solid #e2e8f0;
+            transition: .2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
         .stats-grid {
             display: grid;
@@ -115,22 +133,27 @@
             cursor: pointer;
         }
         .order-item {
-            background: rgba(0,0,0,0.3);
+            background: #f8fafc;
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 10px;
             transition: .2s;
+            border: 1px solid #e2e8f0;
         }
         .order-item:hover {
-            background: rgba(255,255,255,0.05);
+            background: #f1f5f9;
         }
-        .page { display: none; }
-        .active-page { display: block; }
+        .page { display: none; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         select, input {
-            background: #1e293b;
-            border: 1px solid #334155;
-            color: white;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #0f172a;
             border-radius: 10px;
+            padding: 8px;
         }
     </style>
 </head>
@@ -165,7 +188,7 @@
                 <div><span id="userName"></span> <button class="logout-btn" id="logoutBtn">خروج</button></div>
             </div>
 
-            <div id="dashboardPage" class="page active-page">
+            <div id="dashboardPage" class="page">
                 <div class="stats-grid" id="statsGrid"></div>
                 <div class="card"><h3>آخر أوامر الصيانة</h3><div id="recentOrders"></div></div>
             </div>
@@ -276,8 +299,8 @@
         document.getElementById('repairList').innerHTML = repairOrders.map(o=>`
             <div class="card" style="margin-bottom:15px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <div><h3 style="margin-bottom:5px;">${o.customer}</h3><div style="color:#94a3b8;">${o.device}</div></div>
-                    <div><span style="padding:6px 12px; border-radius:20px; background:${getStatusColor(o.status)}; font-size:12px;">${o.status}</span></div>
+                    <div><h3 style="margin-bottom:5px;">${o.customer}</h3><div style="color:#64748b;">${o.device}</div></div>
+                    <div><span style="padding:6px 12px; border-radius:20px; background:${getStatusColor(o.status)}; font-size:12px; color:white;">${o.status}</span></div>
                 </div>
                 <hr style="margin:10px 0;opacity:.1;">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -296,11 +319,11 @@
             let total = orders.reduce((s,o)=>s+o.price,0);
             return `<div class="card" style="margin-bottom:15px;">
                 <div style="display:flex;justify-content:space-between;">
-                    <div><h3>${c.name}</h3><div style="color:#94a3b8;">📞 ${c.phone}</div></div>
-                    <div><span style="background:#22c55e;padding:5px 10px;border-radius:20px;">${total} ج.م</span></div>
+                    <div><h3>${c.name}</h3><div style="color:#64748b;">📞 ${c.phone}</div></div>
+                    <div><span style="background:#22c55e;padding:5px 10px;border-radius:20px; color:white;">${total} ج.م</span></div>
                 </div>
                 <hr style="margin:10px 0;opacity:.1;">
-                <div style="font-size:13px;color:#94a3b8;">عدد العمليات: ${orders.length}</div>
+                <div style="font-size:13px;color:#64748b;">عدد العمليات: ${orders.length}</div>
                 <div style="margin-top:10px;"><button class="btn-sm" onclick="viewCustomer('${c.name}')">عرض التفاصيل</button><button class="btn-sm" style="background:#ef4444;" onclick="deleteCustomer(${c.id})">حذف</button></div>
             </div>`;
         }).join('');
@@ -331,11 +354,19 @@
     window.deleteExpense = (id) => { expenses = expenses.filter(e=>e.id!=id); saveAll(); };
     window.deleteCustomer = (id) => { customers = customers.filter(c=>c.id!=id); saveAll(); };
     window.changeStatus = (id) => { let order = repairOrders.find(o=>o.id==id); if(order){ let newStatus = prompt("الحالة الجديدة (قيد الصيانة / تم التسليم / ملغي)", order.status); if(newStatus) { order.status = newStatus; saveAll(); } } };
-    window.viewCustomer = (name) => { let orders = repairOrders.filter(o => o.customer === name); document.getElementById('customersList').innerHTML = `<div class="card"><div style="display:flex; justify-content:space-between; align-items:center;"><h3>تفاصيل العميل: ${name}</h3><button class="btn-sm" onclick="renderAll()">🔙 رجوع</button></div><hr style="margin:15px 0; opacity:0.1;"><div style="margin-top:15px;">${orders.map(o => `<div class="order-item" style="margin-bottom:10px;"><div>🔧 ${o.device}</div><div>${o.status} | 💰 ${o.price} ج.م</div></div>`).join('')}${orders.length === 0 ? '<div style="color:#94a3b8;">لا توجد عمليات لهذا العميل</div>' : ''}</div></div>`; };
+    window.viewCustomer = (name) => { let orders = repairOrders.filter(o => o.customer === name); document.getElementById('customersList').innerHTML = `<div class="card"><div style="display:flex; justify-content:space-between; align-items:center;"><h3>تفاصيل العميل: ${name}</h3><button class="btn-sm" onclick="renderAll()">🔙 رجوع</button></div><hr style="margin:15px 0; opacity:0.1;"><div style="margin-top:15px;">${orders.map(o => `<div class="order-item" style="margin-bottom:10px;"><div>🔧 ${o.device}</div><div>${o.status} | 💰 ${o.price} ج.م</div></div>`).join('')}${orders.length === 0 ? '<div style="color:#64748b;">لا توجد عمليات لهذا العميل</div>' : ''}</div></div>`; };
     
     let pages = ['dashboard','repair','inventory','expenses','customers','pos','reports','subscriptions'];
-    window.showPage = (page) => { pages.forEach(p=>document.getElementById(p+'Page').classList.remove('active-page')); document.getElementById(page+'Page').classList.add('active-page'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.querySelector(`[data-page="${page}"]`).classList.add('active'); if(page === 'pos') loadCustomersToPOS(); };
-    document.querySelectorAll('.nav-item').forEach(nav=>{ nav.addEventListener('click',()=>{ let pg = nav.getAttribute('data-page'); if(pg) showPage(pg); }); });
+    window.showPage = (page) => { 
+        pages.forEach(p => { document.getElementById(p+'Page').style.display = 'none'; });
+        document.getElementById(page+'Page').style.display = 'block'; 
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelector(`[data-page="${page}"]`).classList.add('active');
+        if(page === 'pos') loadCustomersToPOS();
+    };
+    document.querySelectorAll('.nav-item').forEach(nav=>{ 
+        nav.addEventListener('click',()=>{ let pg = nav.getAttribute('data-page'); if(pg) showPage(pg); }); 
+    });
     
     async function loginSuccess(user) {
         document.getElementById('loginScreen').style.display = 'none';
@@ -344,6 +375,7 @@
         document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ar-EG');
         if(user.email === ADMIN_EMAIL) document.getElementById('subscriptionsNav').style.display = 'block';
         renderAll();
+        showPage('dashboard');
     }
     document.getElementById('googleLoginBtn').onclick = async () => {
         try {
