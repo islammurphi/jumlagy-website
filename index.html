@@ -8,141 +8,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: #f1f5f9;
-            color: #0f172a;
-        }
-        .login-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #0f172a, #020617);
-        }
-        .login-card {
-            background: #020617;
-            padding: 40px;
-            border-radius: 20px;
-            width: 360px;
-            text-align: center;
-            border: 1px solid #1e293b;
-        }
-        .google-btn {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 30px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        body { font-family: 'Tajawal', sans-serif; background: #f1f5f9; color: #0f172a; }
+        /* شاشة تسجيل الدخول */
+        .login-screen { display: flex; align-items: center; justify-content: center; height: 100vh; background: linear-gradient(135deg, #0f172a, #020617); }
+        .login-card { background: #020617; padding: 40px; border-radius: 20px; width: 360px; text-align: center; border: 1px solid #1e293b; }
+        .google-btn { background: #fff; color: #000; border: none; padding: 12px; border-radius: 30px; width: 100%; cursor: pointer; font-weight: bold; }
+        /* التطبيق */
         .app { display: flex; }
-        .sidebar {
-            width: 260px;
-            background: white;
-            height: 100vh;
-            position: fixed;
-            right: 0;
-            padding: 20px;
-            border-left: 1px solid #e2e8f0;
-        }
-        .nav-item {
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            color: #334155;
-            transition: .2s;
-        }
+        .sidebar { width: 260px; background: white; height: 100vh; position: fixed; right: 0; padding: 20px; border-left: 1px solid #e2e8f0; }
+        .nav-item { padding: 12px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; color: #334155; transition: .2s; }
         .nav-item:hover { background: #e2e8f0; }
-        .nav-item.active {
-            background: #2563eb;
-            color: white;
-            font-weight: bold;
-        }
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            right: -20px;
-            width: 4px;
-            height: 40px;
-            background: #2563eb;
-            border-radius: 10px;
-        }
-        .main-content {
-            margin-right: 260px;
-            padding: 25px;
-            width: 100%;
-        }
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            padding: 15px 20px;
-            border-radius: 15px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 20px;
-        }
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-            transition: .2s;
-        }
+        .nav-item.active { background: #2563eb; color: white; font-weight: bold; position: relative; }
+        .nav-item.active::before { content: ''; position: absolute; right: -20px; width: 4px; height: 40px; background: #2563eb; border-radius: 10px; }
+        .main-content { margin-right: 260px; padding: 25px; width: 100%; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 20px; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+        .card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid #e2e8f0; transition: .2s; }
         .stat-card:hover { transform: translateY(-5px); }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .value { font-size: 28px; font-weight: bold; }
-        .btn-sm {
-            background: #2563eb;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 20px;
-            color: white;
-            cursor: pointer;
-            transition: .2s;
-        }
-        .logout-btn {
-            background: #ef4444;
-            border: none;
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        .order-item {
-            background: #f8fafc;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #e2e8f0;
-        }
+        .btn-sm { background: #2563eb; border: none; padding: 6px 14px; border-radius: 20px; color: white; cursor: pointer; transition: .2s; }
+        .logout-btn { background: #ef4444; border: none; color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
+        .order-item { background: #f8fafc; border-radius: 15px; padding: 15px; margin-bottom: 10px; border: 1px solid #e2e8f0; }
         .page { display: none; animation: fadeIn 0.25s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        select, input {
-            background: white;
-            border: 1px solid #e2e8f0;
-            color: #0f172a;
-            border-radius: 10px;
-            padding: 8px;
-        }
+        select, input { background: white; border: 1px solid #e2e8f0; color: #0f172a; border-radius: 10px; padding: 8px; }
     </style>
 </head>
 <body>
@@ -152,13 +42,11 @@
     <div class="login-card">
         <h2>جملجي ERB</h2>
         <p style="margin:10px 0 20px;">سجل دخولك بحساب Google</p>
-        <button class="google-btn" id="googleLoginBtn">
-            <i class="fab fa-google"></i> Login with Google
-        </button>
+        <button class="google-btn" id="googleLoginBtn"><i class="fab fa-google"></i> Login with Google</button>
     </div>
 </div>
 
-<!-- لوحة التحكم الرئيسية -->
+<!-- لوحة التحكم -->
 <div id="dashboard" style="display:none">
     <div class="app">
         <div class="sidebar">
@@ -173,64 +61,45 @@
             <div class="nav-item" id="subscriptionsNav" style="display:none" data-page="subscriptions">👑 الاشتراكات</div>
         </div>
         <div class="main-content">
-            <div class="top-bar">
-                <div id="currentDate"></div>
-                <div><span id="userName"></span> <button class="logout-btn" id="logoutBtn">خروج</button></div>
-            </div>
+            <div class="top-bar"><div id="currentDate"></div><div><span id="userName"></span> <button class="logout-btn" id="logoutBtn">خروج</button></div></div>
 
-            <!-- لوحة التحكم -->
+            <!-- Dashboard Page -->
             <div id="dashboardPage" class="page">
                 <div class="stats-grid" id="statsGrid"></div>
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="margin:0;">آخر أوامر الصيانة</h3>
-                        <button class="btn-sm" onclick="generateDemoData()" style="background: #22c55e;">➕ إضافة بيانات تجريبية</button>
-                    </div>
-                    <div id="recentOrders"></div>
-                </div>
+                <div class="card"><div style="display: flex; justify-content: space-between;"><h3>آخر أوامر الصيانة</h3><button class="btn-sm" onclick="generateDemoData()" style="background: #22c55e;">➕ إضافة بيانات تجريبية</button></div><div id="recentOrders"></div></div>
             </div>
 
-            <!-- أوامر الصيانة بالشكل الجديد (كروت وشبكة) -->
+            <!-- Repair Page (Cards Grid) -->
             <div id="repairPage" class="page">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h2>🔧 أوامر الصيانة</h2>
-                    <button class="btn-sm" onclick="addSampleOrder()">➕ إضافة أمر صيانة</button>
-                </div>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:15px;" id="repairList"></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>🔧 أوامر الصيانة</h2><button class="btn-sm" onclick="addSampleOrder()">+ إضافة أمر صيانة</button></div>
+                <div id="repairList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:15px;"></div>
             </div>
 
             <!-- باقي الصفحات -->
-            <div id="inventoryPage" class="page"><div class="card"><h3>📦 قطع الغيار</h3><button class="btn-sm" onclick="addSamplePart()">+ إضافة</button><div id="partsList" style="margin-top:15px;"></div></div></div>
-            <div id="expensesPage" class="page"><div class="card"><h3>💰 المصروفات</h3><button class="btn-sm" onclick="addSampleExpense()">+ إضافة</button><div id="expensesList" style="margin-top:15px;"></div></div></div>
-
-            <div id="customersPage" class="page"><div class="card"><h3>👥 العملاء</h3><button class="btn-sm" onclick="addSampleCustomer()">+ إضافة</button><div id="customersList" style="margin-top:15px;"></div></div></div>
-
+            <div id="inventoryPage" class="page"><div class="card"><h3>📦 قطع الغيار</h3><button class="btn-sm" onclick="addSamplePart()">+ إضافة</button><div id="partsList"></div></div></div>
+            <div id="expensesPage" class="page"><div class="card"><h3>💰 المصروفات</h3><button class="btn-sm" onclick="addSampleExpense()">+ إضافة</button><div id="expensesList"></div></div></div>
+            <div id="customersPage" class="page"><div class="card"><h3>👥 العملاء</h3><button class="btn-sm" onclick="addSampleCustomer()">+ إضافة</button><div id="customersList"></div></div></div>
+            
+            <!-- POS Page -->
             <div id="posPage" class="page">
-                <div class="card"><h3>🧾 إنشاء فاتورة</h3>
-                    <select id="posCustomer" style="width:100%;padding:10px;margin-bottom:10px;"><option value="">اختر العميل</option></select>
-                    <input id="posItem" placeholder="اسم الصنف" style="width:100%;padding:10px;margin-bottom:10px;">
-                    <input id="posPrice" type="number" placeholder="السعر" style="width:100%;padding:10px;margin-bottom:10px;">
-                    <button class="btn-sm" onclick="addToCart()">➕ إضافة</button>
-                </div>
+                <div class="card"><h3>🧾 إنشاء فاتورة</h3><select id="posCustomer" style="width:100%;padding:10px;margin-bottom:10px;"><option value="">اختر العميل</option></select>
+                <input id="posItem" placeholder="اسم الصنف" style="width:100%;margin-bottom:10px;"><input id="posPrice" type="number" placeholder="السعر" style="width:100%;margin-bottom:10px;">
+                <button class="btn-sm" onclick="addToCart()">➕ إضافة</button></div>
                 <div class="card"><h3>🛒 الفاتورة</h3><div id="cartList"></div><h3 id="cartTotal">الإجمالي: 0 ج.م</h3><button class="btn-sm" onclick="checkout()">💰 إتمام العملية</button></div>
             </div>
-
+            
+            <!-- Reports Page -->
             <div id="reportsPage" class="page">
-                <div class="stats-grid">
-                    <div class="stat-card"><h3>📦 عدد الأوامر</h3><div class="value" id="rep_totalOrders">0</div></div>
-                    <div class="stat-card"><h3>✅ تم التسليم</h3><div class="value" id="rep_done">0</div></div>
-                    <div class="stat-card"><h3>🔧 قيد الصيانة</h3><div class="value" id="rep_progress">0</div></div>
-                    <div class="stat-card"><h3>💰 إجمالي الإيرادات</h3><div class="value" id="rep_revenue">0</div></div>
-                </div>
+                <div class="stats-grid"><div class="stat-card"><h3>📦 عدد الأوامر</h3><div class="value" id="rep_totalOrders">0</div></div><div class="stat-card"><h3>✅ تم التسليم</h3><div class="value" id="rep_done">0</div></div><div class="stat-card"><h3>🔧 قيد الصيانة</h3><div class="value" id="rep_progress">0</div></div><div class="stat-card"><h3>💰 إجمالي الإيرادات</h3><div class="value" id="rep_revenue">0</div></div></div>
                 <div class="card"><h3>تفاصيل العمليات</h3><div id="reportsTable"></div></div>
             </div>
-
+            
             <div id="subscriptionsPage" class="page"><div class="card"><h3>👑 إدارة الاشتراكات</h3><div id="usersList"></div></div></div>
         </div>
     </div>
 </div>
 
-<script type="module">
+    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -255,6 +124,11 @@
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
     let customers = JSON.parse(localStorage.getItem('customers')) || [];
     let cart = [];
+    
+    if(repairOrders.length===0) repairOrders.push({ id:1, customer:"أحمد محمد", device:"iPhone 12", price:550, date:"2025-04-20", status:"قيد الصيانة" });
+    if(expenses.length===0) expenses.push({ id:1, title:"إيجار المحل", amount:5000, date:"2025-04-01" });
+    if(spareParts.length===0) spareParts.push({ id:1, name:"شاشة iPhone", sellPrice:450, qty:8 });
+    if(customers.length===0) customers.push({ id:1, name:"أحمد محمد", phone:"01001234567" });
     
     function getStatusColor(status){
         if(status.includes("تم")) return "#22c55e";
@@ -281,9 +155,7 @@
         alert("✅ تم إضافة بيانات تجريبية بنجاح!");
     };
     
-    function loadCustomersToPOS(){
-        document.getElementById('posCustomer').innerHTML = `<option value="">اختر العميل</option>` + customers.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
-    }
+    function loadCustomersToPOS(){ document.getElementById('posCustomer').innerHTML = `<option value="">اختر العميل</option>` + customers.map(c=>`<option value="${c.name}">${c.name}</option>`).join(''); }
     
     function renderCart(){
         let total = 0;
@@ -317,45 +189,14 @@
         const totalExpenses = expenses.reduce((s,e)=>s+e.amount,0);
         const profit = totalRevenue - totalExpenses;
         const inventoryValue = spareParts.reduce((s,p)=>s+(p.sellPrice*p.qty),0);
-        document.getElementById('statsGrid').innerHTML = `
-            <div class="stat-card"><h3>💰 الإيرادات</h3><div class="value">${totalRevenue} ج.م</div></div>
-            <div class="stat-card"><h3>📉 المصروفات</h3><div class="value">${totalExpenses} ج.م</div></div>
-            <div class="stat-card"><h3>📈 الأرباح</h3><div class="value">${profit} ج.م</div></div>
-            <div class="stat-card"><h3>📦 قيمة المخزون</h3><div class="value">${inventoryValue} ج.م</div></div>
-        `;
+        document.getElementById('statsGrid').innerHTML = `<div class="stat-card"><h3>💰 الإيرادات</h3><div class="value">${totalRevenue} ج.م</div></div><div class="stat-card"><h3>📉 المصروفات</h3><div class="value">${totalExpenses} ج.م</div></div><div class="stat-card"><h3>📈 الأرباح</h3><div class="value">${profit} ج.م</div></div><div class="stat-card"><h3>📦 قيمة المخزون</h3><div class="value">${inventoryValue} ج.م</div></div>`;
         document.getElementById('recentOrders').innerHTML = repairOrders.slice(0,3).map(o=>`<div class="order-item"><div><strong>${o.customer}</strong> - ${o.device} - ${o.price} ج.م</div><div>${o.status}</div></div>`).join('');
-        
-        document.getElementById('repairList').innerHTML = repairOrders.map(o=>`
-            <div class="card">
-                <div style="display:flex; justify-content:space-between;">
-                    <div><h3>${o.customer}</h3><div style="color:#64748b;">${o.device}</div></div>
-                    <div><span style="padding:6px 12px; border-radius:20px; background:${getStatusColor(o.status)}; color:white;">${o.status}</span></div>
-                </div>
-                <hr style="margin:10px 0;">
-                <div style="display:flex; justify-content:space-between;">
-                    <div>💰 ${o.price} ج.م</div>
-                    <div><button class="btn-sm" onclick="changeStatus(${o.id})">تغيير الحالة</button><button class="btn-sm" style="background:#ef4444;" onclick="deleteOrder(${o.id})">حذف</button></div>
-                </div>
-            </div>
-        `).join('');
-        
+        document.getElementById('repairList').innerHTML = repairOrders.map(o=>`<div class="card"><div style="display:flex; justify-content:space-between;"><div><h3>${o.customer}</h3><div style="color:#64748b;">${o.device}</div></div><div><span style="padding:6px 12px; background:${getStatusColor(o.status)}; border-radius:20px; color:white;">${o.status}</span></div></div><hr><div style="display:flex; justify-content:space-between;"><div>💰 ${o.price} ج.م</div><div><button class="btn-sm" onclick="changeStatus(${o.id})">تغيير الحالة</button><button class="btn-sm" style="background:#ef4444;" onclick="deleteOrder(${o.id})">حذف</button></div></div></div>`).join('');
         document.getElementById('partsList').innerHTML = spareParts.map(p=>`<div class="order-item"><div>${p.name} - ${p.sellPrice} ج.م - كمية: ${p.qty}</div><button class="btn-sm" onclick="deletePart(${p.id})">حذف</button></div>`).join('');
         document.getElementById('expensesList').innerHTML = expenses.map(e=>`<div class="order-item"><div>${e.title} - ${e.amount} ج.م</div><button class="btn-sm" onclick="deleteExpense(${e.id})">حذف</button></div>`).join('');
-        
-        document.getElementById('customersList').innerHTML = customers.map(c=>{
-            let orders = repairOrders.filter(o=>o.customer === c.name);
-            let total = orders.reduce((s,o)=>s+o.price,0);
-            return `<div class="card"><div><h3>${c.name}</h3><div>📞 ${c.phone}</div></div><div><span style="background:#22c55e;padding:5px 10px;border-radius:20px; color:white;">${total} ج.م</span></div><hr><div>عدد العمليات: ${orders.length}</div><div><button class="btn-sm" onclick="viewCustomer('${c.name}')">عرض التفاصيل</button><button class="btn-sm" style="background:#ef4444;" onclick="deleteCustomer(${c.id})">حذف</button></div></div>`;
-        }).join('');
-        
-        const totalOrders = repairOrders.length;
-        const done = repairOrders.filter(o=>o.status.includes("تم")).length;
-        const progress = repairOrders.filter(o=>o.status.includes("قيد")).length;
-        const revenue = repairOrders.reduce((s,o)=>s+o.price,0);
-        document.getElementById('rep_totalOrders').innerText = totalOrders;
-        document.getElementById('rep_done').innerText = done;
-        document.getElementById('rep_progress').innerText = progress;
-        document.getElementById('rep_revenue').innerText = revenue + " ج.م";
+        document.getElementById('customersList').innerHTML = customers.map(c=>{ let orders = repairOrders.filter(o=>o.customer === c.name); let total = orders.reduce((s,o)=>s+o.price,0); return `<div class="card"><div><h3>${c.name}</h3><div>📞 ${c.phone}</div></div><div><span style="background:#22c55e;padding:5px 10px;border-radius:20px; color:white;">${total} ج.م</span></div><hr><div>عدد العمليات: ${orders.length}</div><div><button class="btn-sm" onclick="viewCustomer('${c.name}')">عرض التفاصيل</button><button class="btn-sm" style="background:#ef4444;" onclick="deleteCustomer(${c.id})">حذف</button></div></div>`; }).join('');
+        const totalOrders = repairOrders.length; const done = repairOrders.filter(o=>o.status.includes("تم")).length; const progress = repairOrders.filter(o=>o.status.includes("قيد")).length; const revenue = repairOrders.reduce((s,o)=>s+o.price,0);
+        document.getElementById('rep_totalOrders').innerText = totalOrders; document.getElementById('rep_done').innerText = done; document.getElementById('rep_progress').innerText = progress; document.getElementById('rep_revenue').innerText = revenue + " ج.م";
         document.getElementById('reportsTable').innerHTML = repairOrders.map(o=>`<div class="order-item"><div>${o.customer} - ${o.device}</div><div>${o.status} | ${o.price} ج.م</div></div>`).join('');
     }
     
@@ -371,15 +212,11 @@
     window.viewCustomer = (name) => { let orders = repairOrders.filter(o => o.customer === name); document.getElementById('customersList').innerHTML = `<div class="card"><div><h3>تفاصيل العميل: ${name}</h3><button class="btn-sm" onclick="renderAll()">رجوع</button></div><hr>${orders.map(o => `<div class="order-item"><div>🔧 ${o.device}</div><div>${o.status} | 💰 ${o.price} ج.م</div></div>`).join('')}</div>`; };
     
     let pages = ['dashboard','repair','inventory','expenses','customers','pos','reports','subscriptions'];
-    window.showPage = (page) => { 
-        pages.forEach(p => { let el = document.getElementById(p+'Page'); if(el) el.style.display = 'none'; });
-        let selectedPage = document.getElementById(page+'Page');
-        if(selectedPage) selectedPage.style.display = 'block';
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        let activeNav = document.querySelector(`[data-page="${page}"]`);
-        if(activeNav) activeNav.classList.add('active');
-        if(page === 'pos') loadCustomersToPOS();
-    };
+    window.showPage = (page) => { pages.forEach(p => { let el = document.getElementById(p+'Page'); if(el) el.style.display = 'none'; });
+    let selectedPage = document.getElementById(page+'Page'); if(selectedPage) selectedPage.style.display = 'block';
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    let activeNav = document.querySelector(`[data-page="${page}"]`); if(activeNav) activeNav.classList.add('active');
+    if(page === 'pos') loadCustomersToPOS(); };
     document.querySelectorAll('.nav-item').forEach(nav=>{ nav.addEventListener('click',()=>{ let pg = nav.getAttribute('data-page'); if(pg) showPage(pg); }); });
     
     async function loginSuccess(user) {
@@ -388,8 +225,7 @@
         document.getElementById('userName').innerText = user.displayName || user.email.split('@')[0];
         document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ar-EG');
         if(user.email === ADMIN_EMAIL) document.getElementById('subscriptionsNav').style.display = 'block';
-        renderAll();
-        showPage('dashboard');
+        renderAll(); showPage('dashboard');
     }
     document.getElementById('googleLoginBtn').onclick = async () => {
         try {
@@ -417,3 +253,4 @@
 </script>
 </body>
 </html>
+
