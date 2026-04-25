@@ -190,13 +190,13 @@
                 </div>
             </div>
 
-            <!-- أوامر الصيانة (شكل جديد) -->
+            <!-- أوامر الصيانة بالشكل الجديد (كروت وشبكة) -->
             <div id="repairPage" class="page">
-                <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h2>🔧 أوامر الصيانة</h2>
-                    <button class="btn-sm" onclick="addSampleOrder()">+ إضافة أمر صيانة</button>
+                    <button class="btn-sm" onclick="addSampleOrder()">➕ إضافة أمر صيانة</button>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:15px;" id="repairList"></div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:15px;" id="repairList"></div>
             </div>
 
             <!-- باقي الصفحات -->
@@ -250,7 +250,6 @@
     const db = getFirestore(app);
     const ADMIN_EMAIL = "islammurphi@gmail.com";
     
-    // تعريف المتغيرات العامة
     let repairOrders = JSON.parse(localStorage.getItem('repairOrders')) || [];
     let spareParts = JSON.parse(localStorage.getItem('spareParts')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
@@ -314,7 +313,6 @@
     };
     
     function renderAll(){
-        // الإحصائيات الرئيسية
         const totalRevenue = repairOrders.reduce((s,o)=>s+o.price,0);
         const totalExpenses = expenses.reduce((s,e)=>s+e.amount,0);
         const profit = totalRevenue - totalExpenses;
@@ -327,7 +325,6 @@
         `;
         document.getElementById('recentOrders').innerHTML = repairOrders.slice(0,3).map(o=>`<div class="order-item"><div><strong>${o.customer}</strong> - ${o.device} - ${o.price} ج.م</div><div>${o.status}</div></div>`).join('');
         
-        // عرض كروت أوامر الصيانة
         document.getElementById('repairList').innerHTML = repairOrders.map(o=>`
             <div class="card">
                 <div style="display:flex; justify-content:space-between;">
@@ -362,7 +359,6 @@
         document.getElementById('reportsTable').innerHTML = repairOrders.map(o=>`<div class="order-item"><div>${o.customer} - ${o.device}</div><div>${o.status} | ${o.price} ج.م</div></div>`).join('');
     }
     
-    // تعريف الدوال العامة
     window.addSampleOrder = () => { repairOrders.push({ id:Date.now(), customer:"عميل جديد", device:"جهاز جديد", price:200, date:new Date().toISOString().slice(0,10), status:"قيد الصيانة" }); saveAll(); };
     window.addSamplePart = () => { spareParts.push({ id:Date.now(), name:"قطعة جديدة", sellPrice:100, qty:10 }); saveAll(); };
     window.addSampleExpense = () => { expenses.push({ id:Date.now(), title:"مصروف جديد", amount:300, date:new Date().toISOString().slice(0,10) }); saveAll(); };
