@@ -1,0 +1,16 @@
+{
+    "name": "جملجي ERB - نظام إدارة المحلات",
+    "short_name": "جملجي",
+    "description": "نظام متكامل لإدارة محلات الصيانة والعملاء",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#f0f4f8",
+    "theme_color": "#6366f1",
+    "dir": "rtl",
+    "lang": "ar",
+    "categories": ["business", "productivity"],
+    "icons": [],
+    "screenshots": [],
+    "prefer_related_applications": false
+}
