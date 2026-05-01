@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jumlagy - نظام إدارة الورشة والمحافظ</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    
+    <!-- مؤشر التحميل -->
+    <div class="loading-overlay show" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">جاري التحميل...</p>
+    </div>
+    
+    <!-- زر القائمة للموبايل -->
+    <button class="menu-toggle" id="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- ================================ -->
+    <!-- الشريط الجانبي -->
+    <!-- ================================ -->
+    <aside class="sidebar" id="sidebar">
+        <!-- شعار المحل -->
+        <div class="sidebar-brand">
+            <div class="sidebar-shop-logo default-logo" id="sidebar-shop-logo-container" onclick="document.getElementById('shop-logo-input').click()">
+                <i class="fas fa-store"></i>
+            </div>
+            <img class="sidebar-shop-logo hidden" id="sidebar-shop-logo-img" src="" alt="شعار المحل" onclick="document.getElementById('shop-logo-input').click()">
+            <div class="sidebar-shop-name" id="sidebar-shop-name-display">Jumlagy</div>
+            <div class="sidebar-shop-subtitle" id="sidebar-shop-subtitle-display">نظام إدارة الورشة</div>
+            <input type="file" id="shop-logo-input" accept="image/*" style="display:none" onchange="window.handleShopLogoUpload(event)">
+        </div>
+        
+        <!-- قائمة التنقل الرئيسية -->
+        <nav class="sidebar-nav">
+            <a href="#" class="sidebar-link active" data-tab="dashboard">
+                <i class="fas fa-th-large"></i><span>لوحة التحكم</span>
+            </a>
+            <a href="#" class="sidebar-link" data-tab="repairs">
+                <i class="fas fa-wrench"></i><span>أوامر الصيانة</span>
+            </a>
+            <a href="#" class="sidebar-link" data-tab="inventory">
+                <i class="fas fa-boxes"></i><span>المخزون</span>
+            </a>
+            <a href="#" class="sidebar-link" data-tab="expenses">
+                <i class="fas fa-receipt"></i><span>المصاريف</span>
+            </a>
+            <a href="#" class="sidebar-link" data-tab="customers">
+                <i class="fas fa-users"></i><span>العملاء</span>
+            </a>
+            <a href="#" class="sidebar-link" data-tab="wallet">
+                <i class="fas fa-wallet"></i><span>المحافظ</span>
+            </a>
+            <a href="#" class="sidebar-link" data-tab="reports">
+                <i class="fas fa-chart-pie"></i><span>التقارير</span>
+            </a>
+            <a href="#" class="sidebar-link" data-tab="alerts">
+                <i class="fas fa-bell"></i><span>التنبيهات</span>
+                <span class="badge badge-danger sidebar-badge hidden" id="alerts-count">0</span>
+            </a>
+        </nav>
+        
+        <!-- عداد الاشتراك -->
+        <div class="subscription-widget hidden" id="subscription-widget">
+            <div class="days-count" id="sub-days-count">--</div>
+            <div class="days-label" id="sub-days-label">يوم متبقي</div>
+            <div class="subscription-plan" id="sub-plan-name"></div>
+        </div>
+        
+        <!-- فاصل -->
+        <div class="sidebar-divider"></div>
+        
+        <!-- روابط الإدارة (أسفل) -->
+        <div class="sidebar-bottom-links">
+            <a href="#" class="sidebar-link" data-tab="subscriptions" id="subs-nav-link">
+                <i class="fas fa-crown"></i><span>الاشتراكات</span>
+            </a>
+            <a href="#" class="sidebar-link" data-tab="settings">
+                <i class="fas fa-cog"></i><span>الإعدادات</span>
+            </a>
+        </div>
+        
+        <!-- تذييل الشريط -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user-info">
+                <img class="sidebar-user-avatar" id="sidebar-user-photo" src="" alt="صورة المستخدم">
+                <div class="sidebar-user-details">
+                    <div class="sidebar-user-name" id="sidebar-user-name">مستخدم</div>
+                    <div class="sidebar-user-role" id="sidebar-user-role">مستخدم</div>
+                </div>
+            </div>
+            <button class="btn-logout-sidebar" id="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </div>
+    </aside>
+    
+    <!-- ================================ -->
+    <!-- المحتوى الرئيسي -->
+    <!-- ================================ -->
+    <main class="main-content" id="main-content">
+        
+        <!-- 1. لوحة التحكم -->
+        <section id="tab-dashboard" class="tab-content active">
+            <div class="page-header">
+                <div>
+                    <h1>لوحة التحكم</h1>
+                    <p class="subtitle" id="current-date"></p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="window.openRepairForm()">
+                        <i class="fas fa-plus"></i> أمر صيانة جديد
+                    </button>
+                </div>
+            </div>
+            
+            <!-- KPI Cards -->
+            <div class="stats-grid" id="stats-cards"></div>
+            
+            <!-- رسم بياني + مخزون -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar text-primary"></i> الإيرادات والمصروفات</h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="revenueExpenseChart" height="280"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-boxes text-purple"></i> حالة المخزون</h3>
+                        <a href="#" class="link" onclick="window.switchTab('inventory')">إدارة المخزون <i class="fas fa-chevron-left"></i></a>
+                    </div>
+                    <div class="card-body">
+                        <div id="inventory-status" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;"></div>
+                        <div id="out-of-stock-alerts" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- أفضل العملاء + آخر الأوامر -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-star text-warning"></i> أفضل العملاء</h3>
+                    </div>
+                    <div class="card-body" id="top-customers-widget"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clock text-primary"></i> آخر الأوامر</h3>
+                        <a href="#" class="link" onclick="window.switchTab('repairs')">عرض الكل <i class="fas fa-chevron-left"></i></a>
+                    </div>
+                    <div class="card-body" id="recent-repairs"></div>
+                </div>
+            </div>
+            
+            <!-- إدارة المستخدمين -->
+            <div class="card hidden" id="users-manager-card">
+                <div class="card-header"><h3><i class="fas fa-user-shield"></i> إدارة المستخدمين</h3></div>
+                <div class="card-body" id="users-manager"></div>
+            </div>
+        </section>
+        
+        <!-- 2. أوامر الصيانة -->
+        <section id="tab-repairs" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1>أوامر الصيانة</h1>
+                    <p class="subtitle" id="repairs-count"></p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="window.openRepairForm()">
+                        <i class="fas fa-plus"></i> أمر صيانة جديد
+                    </button>
+                </div>
+            </div>
+            <div class="filters-row">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="input-field" placeholder="بحث بالجهاز أو العميل..." id="repair-search" oninput="window.loadRepairsTable()">
+                </div>
+                <select class="input-field w-auto" id="repair-filter" onchange="window.loadRepairsTable()">
+                    <option value="all">كل الحالات</option>
+                    <option value="قيد_الصيانة">قيد الصيانة</option>
+                    <option value="جاهز">جاهز للتسليم</option>
+                    <option value="تم_التسليم">تم التسليم</option>
+                </select>
+            </div>
+            <div class="card">
+                <div class="card-body" id="repairs-table-container" style="padding: 0;">
+                    <p class="text-center text-muted py-6">جاري التحميل...</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 3. المخزون -->
+        <section id="tab-inventory" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1>المخزون</h1>
+                    <p class="subtitle" id="inventory-count"></p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="window.openPartForm()">
+                        <i class="fas fa-plus"></i> إضافة قطعة
+                    </button>
+                </div>
+            </div>
+            <div class="stats-grid" id="inventory-summary"></div>
+            <div class="search-box mb-3">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="input-field" placeholder="بحث..." id="part-search" oninput="window.loadInventoryTable()">
+            </div>
+            <div class="card">
+                <div class="card-body" id="inventory-table-container" style="padding: 0;"></div>
+            </div>
+        </section>
+        
+        <!-- 4. المصاريف -->
+        <section id="tab-expenses" class="tab-content">
+            <div class="page-header">
+                <div><h1>المصاريف</h1><p class="subtitle" id="expenses-count"></p></div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="window.openExpenseForm()">
+                        <i class="fas fa-plus"></i> إضافة مصروف
+                    </button>
+                </div>
+            </div>
+            <div class="filters-row">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="input-field" placeholder="بحث..." id="expense-search" oninput="window.loadExpensesTable()">
+                </div>
+                <select class="input-field w-auto" id="expense-cat-filter" onchange="window.loadExpensesTable()">
+                    <option value="الكل">الكل</option>
+                    <option value="إيجار">إيجار</option>
+                    <option value="كهرباء">كهرباء</option>
+                    <option value="رواتب">رواتب</option>
+                    <option value="تسويق">تسويق</option>
+                    <option value="أخرى">أخرى</option>
+                </select>
+            </div>
+            <div class="stats-grid" id="expenses-summary"></div>
+            <div id="expenses-list"></div>
+        </section>
+        
+        <!-- 5. العملاء -->
+        <section id="tab-customers" class="tab-content">
+            <div class="page-header">
+                <div><h1>العملاء</h1><p class="subtitle" id="customers-count"></p></div>
+            </div>
+            <div class="search-box mb-3">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="input-field" placeholder="بحث بالاسم أو رقم الهاتف..." id="customer-search" oninput="window.loadCustomersTable()">
+            </div>
+            <div class="stats-grid" id="customers-summary"></div>
+            <div id="customers-list"></div>
+        </section>
+        
+        <!-- 6. المحافظ -->
+        <section id="tab-wallet" class="tab-content">
+            <div class="page-header">
+                <div><h1>المحافظ الإلكترونية</h1><p class="subtitle">إدارة المحافظ والعمليات المالية</p></div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="window.openWalletModal()">
+                        <i class="fas fa-plus"></i> محفظة جديدة
+                    </button>
+                </div>
+            </div>
+            <div class="wallet-summary-cards" id="wallet-summary-area"></div>
+            <div id="wallet-cards-container"></div>
+            <div class="card mt-4">
+                <div class="card-header"><h3><i class="fas fa-history"></i> آخر العمليات</h3></div>
+                <div class="card-body" id="wallet-transactions-body" style="padding: 0;"></div>
+            </div>
+        </section>
+        
+        <!-- 7. التقارير -->
+        <section id="tab-reports" class="tab-content">
+            <div class="page-header">
+                <div><h1>التقارير والتحليلات</h1><p class="subtitle">تحليل مالي وأداء شامل</p></div>
+            </div>
+            <div class="reports-dashboard" id="reports-content"></div>
+        </section>
+        
+        <!-- 8. التنبيهات -->
+        <section id="tab-alerts" class="tab-content">
+            <div class="page-header">
+                <div><h1><i class="fas fa-exclamation-triangle text-warning"></i> التنبيهات</h1><p class="subtitle" id="alerts-summary-text"></p></div>
+            </div>
+            <div id="alerts-list"></div>
+        </section>
+        
+        <!-- 9. الاشتراكات -->
+        <section id="tab-subscriptions" class="tab-content">
+            <div class="page-header">
+                <div><h1>الاشتراكات</h1><p class="subtitle" id="subs-count-text"></p></div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="window.openSubscriptionModal()">
+                        <i class="fas fa-plus"></i> اشتراك جديد
+                    </button>
+                </div>
+            </div>
+            <div class="stats-grid" id="subscription-summary-cards"></div>
+            <div class="filters-row">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="input-field" placeholder="بحث..." id="sub-search" oninput="window.loadSubscriptions()">
+                </div>
+                <select class="input-field w-auto" id="sub-filter" onchange="window.loadSubscriptions()">
+                    <option value="all">كل الحالات</option>
+                    <option value="نشط">نشط</option>
+                    <option value="منتهي">منتهي</option>
+                </select>
+            </div>
+            <div class="card">
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th><th>العميل</th><th>الإيميل</th><th>الخطة</th>
+                                    <th>السعر</th><th>البداية</th><th>النهاية</th>
+                                    <th>المتبقي</th><th>الحالة</th><th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subscriptions-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 10. الإعدادات -->
+        <section id="tab-settings" class="tab-content">
+            <div class="page-header">
+                <div><h1>الإعدادات</h1><p class="subtitle">تخصيص النظام</p></div>
+            </div>
+            <div class="settings-wrapper" id="settings-content"></div>
+        </section>
+        
+    </main>
+    
+    <!-- ================================ -->
+    <!-- النوافذ المنبثقة -->
+    <!-- ================================ -->
+    
+    <!-- أمر صيانة -->
+    <div class="modal-overlay" id="repair-modal">
+        <div class="modal-box modal-lg">
+            <div class="modal-header">
+                <h3 id="repair-modal-title">أمر صيانة جديد</h3>
+                <button class="modal-close-btn" onclick="window.closeRepairForm()"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="repair-form" onsubmit="return false;">
+                <input type="hidden" id="repair-id">
+                <input type="hidden" id="repair-images-data" value="[]">
+                
+                <!-- العميل والجهاز -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <div class="section-icon icon-blue"><i class="fas fa-info-circle"></i></div>
+                        معلومات العميل والجهاز
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group"><label>اسم العميل *</label><input type="text" class="input-field" id="repair-customer-name" required></div>
+                        <div class="form-group"><label>رقم الهاتف</label><input type="text" class="input-field" id="repair-customer-phone"></div>
+                        <div class="form-group"><label>الجهاز / الموديل *</label><input type="text" class="input-field" id="repair-device-name" required></div>
+                        <div class="form-group"><label>الحالة</label><select class="input-field" id="repair-status">
+                            <option value="قيد_الصيانة">قيد الصيانة</option>
+                            <option value="جاهز">جاهز للتسليم</option>
+                            <option value="تم_التسليم">تم التسليم</option>
+                        </select></div>
+                    </div>
+                </div>
+                
+                <!-- صورة الجهاز -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <div class="section-icon icon-purple"><i class="fas fa-camera"></i></div>
+                        صورة الجهاز
+                    </div>
+                    <div class="image-upload-area" onclick="document.getElementById('repair-image-input').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>اضغط لرفع صورة أو التقط صورة بالكاميرا</p>
+                        <input type="file" id="repair-image-input" accept="image/*" capture="environment" multiple style="display:none" onchange="window.handleRepairImages(event)">
+                    </div>
+                    <div class="image-preview-container" id="repair-images-preview"></div>
+                </div>
+                
+                <!-- الفني والأجر -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <div class="section-icon icon-green"><i class="fas fa-user-cog"></i></div>
+                        الفني والتسعير
+                    </div>
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group"><label>الفني</label><select class="input-field" id="repair-technician"></select></div>
+                        <div class="form-group"><label>أجر الفني (ج.م)</label><input type="number" class="input-field" id="repair-tech-fee" value="0"></div>
+                        <div class="form-group"><label>أجر الصيانة (ج.م)</label><input type="number" class="input-field" id="repair-price" value="0"></div>
+                    </div>
+                </div>
+                
+                <!-- قطع الغيار -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <div class="section-icon icon-amber"><i class="fas fa-box"></i></div>
+                        قطع الغيار المستخدمة
+                    </div>
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label>اختيار من المخزون</label>
+                            <select class="input-field" id="repair-part-select" onchange="window.addPartFromInventory()">
+                                <option value="">اختر قطعة...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="parts-list" id="repair-parts-list">
+                        <p class="text-sm text-muted text-center py-3">لم تضف قطع غيار بعد</p>
+                    </div>
+                    <input type="hidden" id="repair-parts-data" value="[]">
+                </div>
+                
+                <!-- التواريخ والمشكلة -->
+                <div class="form-grid form-grid-2">
+                    <div class="form-group"><label>تاريخ الاستلام</label><input type="date" class="input-field" id="repair-receive-date"></div>
+                    <div class="form-group"><label>تاريخ التسليم المتوقع</label><input type="date" class="input-field" id="repair-delivery-date"></div>
+                </div>
+                <div class="form-group"><label>وصف المشكلة</label><textarea class="input-field" id="repair-issue" rows="2"></textarea></div>
+                <div class="form-group"><label>ملاحظات</label><textarea class="input-field" id="repair-notes" rows="2"></textarea></div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.closeRepairForm()">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="window.saveRepairForm()">
+                        <i class="fas fa-save"></i> حفظ الأمر
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- قطعة غيار -->
+    <div class="modal-overlay" id="part-modal">
+        <div class="modal-box">
+            <div class="modal-header"><h3 id="part-modal-title">إضافة قطعة غيار</h3><button class="modal-close-btn" onclick="window.closePartForm()"><i class="fas fa-times"></i></button></div>
+            <form id="part-form"><input type="hidden" id="part-id">
+                <div class="form-group"><label>اسم القطعة *</label><input type="text" class="input-field" id="part-name" required></div>
+                <div class="form-group"><label>التصنيف</label><select class="input-field" id="part-category"><option value="بطاريات">بطاريات</option><option value="شاشات">شاشات</option><option value="شواحن">شواحن</option><option value="كاميرات">كاميرات</option><option value="أخرى">أخرى</option></select></div>
+                <div class="form-group"><label>سعر الشراء (ج.م) *</label><input type="number" class="input-field" id="part-purchase-price" required></div>
+                <div class="form-group"><label>سعر البيع (ج.م)</label><input type="number" class="input-field" id="part-selling-price"></div>
+                <div class="form-group"><label>الكمية *</label><input type="number" class="input-field" id="part-quantity" required></div>
+                <div class="form-group"><label>الحد الأدنى للتنبيه</label><input type="number" class="input-field" id="part-min-quantity"></div>
+                <div class="form-group"><label>المورد</label><input type="text" class="input-field" id="part-supplier"></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="window.closePartForm()">إلغاء</button><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ</button></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- باقي النوافذ مختصرة -->
+    <div class="modal-overlay" id="expense-modal">
+        <div class="modal-box">
+            <div class="modal-header"><h3 id="expense-modal-title">إضافة مصروف</h3><button class="modal-close-btn" onclick="window.closeExpenseForm()"><i class="fas fa-times"></i></button></div>
+            <form id="expense-form"><input type="hidden" id="expense-id">
+                <div class="form-group"><label>اسم المصروف *</label><input type="text" class="input-field" id="expense-title" required></div>
+                <div class="form-group"><label>التصنيف</label><select class="input-field" id="expense-category"><option value="أخرى">أخرى</option><option value="إيجار">إيجار</option><option value="كهرباء">كهرباء</option><option value="رواتب">رواتب</option><option value="تسويق">تسويق</option></select></div>
+                <div class="form-group"><label>المبلغ (ج.م) *</label><input type="number" class="input-field" id="expense-amount" required></div>
+                <div class="form-group"><label>التاريخ</label><input type="date" class="input-field" id="expense-date"></div>
+                <div class="form-group"><label>ملاحظات</label><input type="text" class="input-field" id="expense-notes"></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="window.closeExpenseForm()">إلغاء</button><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ</button></div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal-box modal-sm text-center">
+            <i class="fas fa-exclamation-triangle text-danger" style="font-size: 44px; margin-bottom: 16px;"></i>
+            <h3 style="margin-bottom: 8px;">تأكيد الحذف</h3>
+            <p class="text-muted mb-4" id="delete-message"></p>
+            <div class="flex gap-2 justify-center">
+                <button class="btn btn-secondary" onclick="window.closeDeleteModal()">إلغاء</button>
+                <button class="btn btn-danger" id="delete-confirm-btn">حذف</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="wallet-modal">
+        <div class="modal-box">
+            <div class="modal-header"><h3 id="wallet-modal-title">محفظة جديدة</h3><button class="modal-close-btn" onclick="window.closeWalletModal()"><i class="fas fa-times"></i></button></div>
+            <form id="wallet-form"><input type="hidden" id="wallet-id">
+                <div class="form-group"><label>اسم المحفظة *</label><input type="text" class="input-field" id="wallet-name" required></div>
+                <div class="form-group"><label>رقم الهاتف</label><input type="text" class="input-field" id="wallet-phone"></div>
+                <div class="form-group"><label>النوع *</label><select class="input-field" id="wallet-type" required onchange="window.onWalletTypeChange()"><option value="">اختر النوع</option><option value="vodafone">فودافون كاش</option><option value="instapay">إنستاباي</option><option value="bank">محفظة بنكية</option></select></div>
+                <div id="wallet-limits-info" class="alert alert-info hidden"></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="window.closeWalletModal()">إلغاء</button><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ</button></div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="transaction-modal">
+        <div class="modal-box">
+            <div class="modal-header"><h3>عملية مالية</h3><button class="modal-close-btn" onclick="window.closeTransactionModal()"><i class="fas fa-times"></i></button></div>
+            <form id="transaction-form"><input type="hidden" id="transaction-wallet-id">
+                <div class="form-group"><label>النوع</label><select class="input-field" id="transaction-type"><option value="deposit">إيداع</option><option value="withdraw">سحب</option></select></div>
+                <div class="form-group"><label>المبلغ (ج.م)</label><input type="number" class="input-field" id="transaction-amount" min="1" required></div>
+                <div class="form-group"><label>ملاحظات</label><input type="text" class="input-field" id="transaction-notes"></div>
+                <div id="transaction-limit-warning" class="alert alert-danger hidden"></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="window.closeTransactionModal()">إلغاء</button><button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> تنفيذ</button></div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="subscription-modal">
+        <div class="modal-box">
+            <div class="modal-header"><h3 id="subscription-modal-title">اشتراك جديد</h3><button class="modal-close-btn" onclick="window.closeSubscriptionModal()"><i class="fas fa-times"></i></button></div>
+            <form id="subscription-form"><input type="hidden" id="subscription-id">
+                <div class="form-group"><label>ربط بمستخدم</label><select class="input-field" id="subscription-linked-user" onchange="window.onLinkedUserChange()"><option value="">اختر مستخدم...</option></select></div>
+                <div class="form-group"><label>اسم العميل *</label><input type="text" class="input-field" id="subscription-customer-name" required></div>
+                <div class="form-group"><label>الإيميل *</label><input type="email" class="input-field" id="subscription-customer-email" required></div>
+                <div class="form-group"><label>الخطة *</label><select class="input-field" id="subscription-plan" onchange="window.onSubscriptionPlanChange()"><option value="تجريبي">تجريبي (3 أيام)</option><option value="شهري">شهري (30 يوم)</option><option value="سنوي">سنوي (365 يوم)</option></select></div>
+                <div class="form-group"><label>السعر (ج.م)</label><input type="number" class="input-field" id="subscription-price" value="0"></div>
+                <div class="form-group"><label>تاريخ البداية</label><input type="date" class="input-field" id="subscription-start-date"></div>
+                <div class="form-group"><label>تاريخ الانتهاء</label><input type="date" class="input-field" id="subscription-end-date"></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="window.closeSubscriptionModal()">إلغاء</button><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
